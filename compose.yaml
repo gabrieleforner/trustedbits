@@ -1,0 +1,21 @@
+﻿services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest 
+    env_file: .apiserver.env
+    volumes:
+      - sql-data:/var/opt/mssql
+    ports:
+      - "1433:1433"
+    
+  api-server:
+    image: api-server
+    build:
+      context: .
+      dockerfile: api-server/Dockerfile
+
+volumes:
+  sql-data:

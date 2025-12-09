@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api-server", "api-server\api-server.csproj", "{64F05A5C-E8FE-4725-B102-DCD8C428FF0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{33643AEA-861A-4290-B642-951D9A77C006}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64F05A5C-E8FE-4725-B102-DCD8C428FF0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64F05A5C-E8FE-4725-B102-DCD8C428FF0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64F05A5C-E8FE-4725-B102-DCD8C428FF0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64F05A5C-E8FE-4725-B102-DCD8C428FF0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
