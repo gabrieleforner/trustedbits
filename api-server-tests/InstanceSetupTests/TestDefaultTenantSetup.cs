@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TrustedbitsApiServer.Models;
+using TrustedbitsApiServer.Models.Entities;
 using TrustedbitsApiServer.Services;
 
 namespace ApiServerTests.InstanceSetupTests;

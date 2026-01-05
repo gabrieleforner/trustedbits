@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using TrustedbitsApiServer.Models;
+using TrustedbitsApiServer.Models.Entities;
 
 namespace TrustedbitsApiServer.Services;
 

@@ -1,4 +1,4 @@
-namespace TrustedbitsApiServer.Models;
+namespace TrustedbitsApiServer.Models.Entities;
 
 /// <summary>
 /// Defines what an element that is bound to a tenant must have
@@ -21,4 +21,6 @@ public class Tenant
     public List<Application> TenantApplications { get; set; }
     public List<User> TenantUsers { get; set; }
     public List<Role> TenantRoles { get; set; }
+    
+    public TenantSettings TenantSettings { get; set; }
 }

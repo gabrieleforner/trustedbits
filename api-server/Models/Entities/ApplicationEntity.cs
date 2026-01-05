@@ -1,3 +1,5 @@
+using TrustedbitsApiServer.Models.Entities;
+
 namespace TrustedbitsApiServer.Models;
 
 /// <summary>
