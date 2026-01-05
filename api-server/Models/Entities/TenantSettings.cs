@@ -7,6 +7,7 @@ namespace TrustedbitsApiServer.Models.Entities;
 /// </summary>
 public class TenantSettings : ITenantAssociated
 {
+    public Guid Id { get; set; }
     public Guid TenantId { get; set; }
     public Tenant Tenant { get; set; }
 
