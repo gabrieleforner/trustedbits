@@ -5,7 +5,7 @@
 
     environment:
       ACCEPT_EULA: ${ACCEPT_EULA}
-      SA_PASSWORD: ${SA_PASSWORD}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_PID: ${MSSQL_PID}
 
     ports:
@@ -13,15 +13,6 @@
 
     volumes:
       - sqlserver_data:/var/opt/mssql
-
-    healthcheck:
-      test: [
-        "CMD-SHELL",
-        "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"
-      ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   sqlserver_data:
