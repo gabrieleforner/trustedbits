@@ -10,8 +10,7 @@ It relies on **tenants**, so each application/identity domain it's isolated and 
 applications/clients, ...) and RBAC (Role-Based Access Control) to manage authorization. In terms of authentication and  
 authorization protocols, the following are supported:
 - OIDC (OpenID Connect)
-- SAML 2.0 (Security Assertion Markup Language)
-- Stateless JWT
+- OAuth 2.0
 
 
 ## Tech Stack
