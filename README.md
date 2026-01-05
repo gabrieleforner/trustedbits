@@ -33,9 +33,13 @@ trustedbits/
 │   ├── Services
 │   ├── Controllers
 │   └── Models
+│       ├── DTOs
+│       └── Entities
 └── dashboard/
 ```
 
-**Services**: Contain all the business logic independent from the caller endpoint controller.  
+**Services**: Contain all the business logic regardless of the caller endpoint controller.  
 **Controllers**: Contain all the API controllers.  
 **Models/Entities**: Contain classes that extends Identity Core entities to support tenancy and the tenant entity.  
+**Models/DTOs**: Contain classes that define formats to request/response resources between application layers and 
+external clients.

@@ -12,13 +12,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddControllers().AddNewtonsoftJson();
         builder.Services.AddDbContext<ServerDbContext>(opt => {
             opt.UseSqlServer(GetConnectionString(builder.Configuration));
         });
         builder.Services
             .AddIdentity<User, Role>()
             .AddEntityFrameworkStores<ServerDbContext>();
-        builder.Services.AddControllers();
         
         var app = builder.Build();
         

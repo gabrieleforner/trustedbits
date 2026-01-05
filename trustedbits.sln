@@ -5,6 +5,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2357F5C4-5675-4510-8A30-54139F69FA71}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api-server-tests", "api-server-tests\api-server-tests.csproj", "{53213295-AA3A-4150-82C5-5AC2E1CF2AB6}"
