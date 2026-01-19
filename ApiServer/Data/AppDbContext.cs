@@ -34,6 +34,20 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        // Table Names
+        // 
+        modelBuilder.Entity<Tenant>().ToTable("TrustedbitsTenants");
+        modelBuilder.Entity<TenantSettings>().ToTable("TrustedbitsTenantSettings");
+        modelBuilder.Entity<User>().ToTable("TrustedbitsUsers");
+        modelBuilder.Entity<Role>().ToTable("TrustedbitsRoles");
+        modelBuilder.Entity<Scope>().ToTable("TrustedbitsScopes");
+        modelBuilder.Entity<ScopeAction>().ToTable("TrustedbitsScopes");
+        
+        // Join tables
+        modelBuilder.Entity<RoleScope<Guid>>().ToTable("TrustedbitsRoleScopes");
+        modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("TrustedbitsUserRoles");
+        
         SetupTenantRelationships(modelBuilder);
         SetupScopeRelationships(modelBuilder);
         
@@ -45,7 +59,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
     {
         // Users -> tenant relationship
         modelBuilder.Entity<User>()
-            .ToTable("TrustedbitsUsers")
             .HasOne(u => u.ParentTenant)
             .WithMany(t => t.Users)
             .HasForeignKey(u => u.ParentTenantId)
@@ -53,7 +66,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
         
         // Roles -> tenant relationship
         modelBuilder.Entity<Role>()
-            .ToTable("TrustedbitsRoles")
             .HasOne(r => r.ParentTenant)
             .WithMany(t => t.Roles)
             .HasForeignKey(r => r.ParentTenantId)
@@ -61,7 +73,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
         
         // Roles -> tenant relationship
         modelBuilder.Entity<Scope>()
-            .ToTable("TrustedbitsScopes")
             .HasOne(r => r.ParentTenant)
             .WithMany(t => t.Scopes)
             .HasForeignKey(r => r.ParentTenantId)
@@ -69,7 +80,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
         
         // Tenant settings -> tenant relationship
         modelBuilder.Entity<TenantSettings>()
-            .ToTable("TrustedbitsTenantSettings")
             .HasOne(s => s.ParentTenant)
             .WithOne(t => t.Settings)
             .OnDelete(DeleteBehavior.Cascade);
@@ -81,7 +91,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
     private void SetupScopeRelationships(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Scope>()
-            .ToTable("TrustedbitsScopes")
             .HasKey(s => s.Id);
         
         modelBuilder.Entity<Scope>()
@@ -100,7 +109,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
     private void SetupRoleScopeJoinTable(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<RoleScope<Guid>>()
-            .ToTable("TrustedbitsRoleScopes")
             .HasKey(rs => new { rs.ScopeId, rs.RoleId });
         
         modelBuilder.Entity<RoleScope<Guid>>()
@@ -119,7 +127,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
     private void SetupUserRoleJoinTable(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<IdentityUserRole<Guid>>()
-            .ToTable("TrustedbitsUserRoles")
             .HasKey(ur => new { ur.UserId, ur.RoleId });
         
         modelBuilder.Entity<IdentityUserRole<Guid>>()
