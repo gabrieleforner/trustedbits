@@ -1,4 +1,4 @@
-namespace ApiServer.Models.Entities;
+namespace Trustedbits.ApiServer.Models.Entities;
 
 public class Tenant
 {

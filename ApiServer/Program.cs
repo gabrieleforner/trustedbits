@@ -1,12 +1,19 @@
-using ApiServer.Interfaces;
-using ApiServer.Models.Entities;
-using ApiServer.Services;
+using Trustedbits.ApiServer.Data;
+using Trustedbits.ApiServer.Models.Entities;
+using Trustedbits.ApiServer.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApiServer;
+namespace Trustedbits.ApiServer;
 
+/// <summary>
+/// Entrypoint class of the API server
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Entrypoint of the program
+    /// </summary>
+    /// <param name="args"></param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
