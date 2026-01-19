@@ -1,0 +1,30 @@
+on:
+  pull_request:
+    branches: [ '*' ]
+  push:
+    branches: [ '*' ]
+    
+jobs: 
+  apiserver-docfx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install DocFX CLI Tool
+        run: dotnet tool install -g docfx
+        
+      - name: Build docs
+        run: cd ApiServer && docfx docfx.json
+        
+      - name: Retain docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: apiserver-documentation
+          path: |
+            ApiServer/_site/**/*.pdf
+          retention-days: 90
