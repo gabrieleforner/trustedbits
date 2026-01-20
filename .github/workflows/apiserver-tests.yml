@@ -1,0 +1,28 @@
+on:
+  pull_request:
+    branches: [ '*' ]
+  push:
+    branches: [ '*' ]
+    
+jobs: 
+  apiserver-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+        
+      - name: Run unit tests with .NET codecov
+        run: cd ApiServer && dotnet test --collect:"XPlat Code Coverage"
+        
+      - name: Retain codecov results
+        uses: actions/upload-artifact@v4
+        with:
+          name: apiserver-documentation
+          path: |
+            ApiServerTests/TestResults/**/*.xml
+          retention-days: 90

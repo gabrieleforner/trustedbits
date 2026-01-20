@@ -6,6 +6,7 @@ riderModule.iml
 
 
 *.env
+*/TestResults
 */Properties/launchSettings.json
 */docs
 */api
