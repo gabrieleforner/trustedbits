@@ -115,13 +115,13 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
             .HasOne<Role>()
             .WithMany(r => r.RoleScopes)
             .HasForeignKey(rs => rs.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<RoleScope<Guid>>()
             .HasOne<Scope>()
             .WithMany(s => s.RoleScopes)
             .HasForeignKey(rs => rs.ScopeId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     private void SetupUserRoleJoinTable(ModelBuilder modelBuilder)
