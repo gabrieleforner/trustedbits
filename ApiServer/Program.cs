@@ -2,6 +2,8 @@ using Trustedbits.ApiServer.Data;
 using Trustedbits.ApiServer.Models.Entities;
 using Trustedbits.ApiServer.Data.Repository;
 using Microsoft.EntityFrameworkCore;
+using Trustedbits.ApiServer.Delegates;
+using Trustedbits.ApiServer.Models.DTOs;
 
 namespace Trustedbits.ApiServer;
 
@@ -30,6 +32,9 @@ public class Program
         });
         builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<AppDbContext>();
         builder.Services.AddScoped(typeof(IRepository<>), typeof(DbRepositoryImpl<>));
+        
+        // Bind provider implementations to interfaces
+        builder.Services.AddScoped<IAuthenticationDelegate, DefaultAuthenticationDelegate>();
         
         var app = builder.Build();
 
