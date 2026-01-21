@@ -1,5 +1,3 @@
-using Trustedbits.ApiServer.Models.Entities;
-
 namespace Trustedbits.ApiServer.Delegates;
 
 /// <summary>
@@ -8,5 +6,11 @@ namespace Trustedbits.ApiServer.Delegates;
 /// </summary>
 public interface ISessionDelegate
 {
-    Task<string> InitializeIdPSession<TLoginRequestDto>(TLoginRequestDto loginDto, TenantSettings tenantSettings);
+    Task<string> CreateIdPSession(Guid tenantId, string email);
+    Task<bool> VerifyIdPSessionExists(string sessionKey);
+    Task<bool> RevokeIdPSession(string sessionKey);
+    
+    Task<string> CreateSession(Guid tenantId, string email);
+    Task<bool> VerifySessionExists(string sessionKey);
+    Task<bool> RevokeSession(string sessionKey);
 }

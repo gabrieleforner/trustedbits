@@ -37,4 +37,12 @@
       <Folder Include="Services\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="_site\api\toc.json" />
+      <_ContentIncludedByDefault Remove="_site\docs\toc.json" />
+      <_ContentIncludedByDefault Remove="_site\index.json" />
+      <_ContentIncludedByDefault Remove="_site\manifest.json" />
+      <_ContentIncludedByDefault Remove="_site\toc.json" />
+    </ItemGroup>
+
 </Project>

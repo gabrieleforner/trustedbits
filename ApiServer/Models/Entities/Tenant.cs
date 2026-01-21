@@ -18,4 +18,8 @@ public class TenantSettings
 {
     public Tenant ParentTenant { get; set; }
     public Guid ParentTenantId { get; set; }
+
+    public TimeSpan? IdPSessionExpiry { get; set; }
+    public TimeSpan? OidcSessionExpiry { get; set; }
+    public int SaltBytesCount { get; set; }
 }

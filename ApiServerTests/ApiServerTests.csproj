@@ -27,4 +27,8 @@
       <ProjectReference Include="..\ApiServer\ApiServer.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="SessionDelegate\" />
+    </ItemGroup>
+
 </Project>
