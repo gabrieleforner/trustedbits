@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Trustedbits.ApiServer.Delegates;
 using Trustedbits.ApiServer.Models.DTOs;
+using Trustedbits.ApiServer.Services;
 
 namespace Trustedbits.ApiServer;
 
@@ -54,6 +55,9 @@ public class Program
             builder.Services.AddScoped<IAuthenticationDelegate, DefaultAuthenticationDelegate>();
             builder.Services.AddScoped<ISessionDelegate, DefaultSessionDelegate>();
 
+            // Bind service interface to implementations
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())

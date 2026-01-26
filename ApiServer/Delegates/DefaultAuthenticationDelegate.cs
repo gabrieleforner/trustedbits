@@ -26,26 +26,26 @@ public class DefaultAuthenticationDelegate : IAuthenticationDelegate
     }
     
     /// <inheritdoc/>
-    public async Task<bool> AuthenticateUser(UserLoginRequestDto loginDto, Guid tenantId)
+    public async Task<string?> AuthenticateUser(UserLoginRequestDto loginDto, Guid tenantId)
     {
         // Check if whether the account exists in the requested tenant
         User? matchingUser = await GetMatchingUser(loginDto, tenantId);
         if (matchingUser == null)
-            return false;
+            return null;
         
     
         var isPasswordValid = await _userManager.CheckPasswordAsync(matchingUser, loginDto.Password);
         if (!isPasswordValid)
-            return false;
-        return true;
+            return null;
+        return matchingUser.Email;
     }
 
     /// <summary>
     /// Returns (if present) the database entry (mapped as a class instance) of a user that matches
     /// login data and tenant ID.
     /// </summary>
-    /// <param name="loginDto"></param>
-    /// <param name="tenantId"></param>
+    /// <param name="loginDto">DTO instance with data for get the matching user</param>
+    /// <param name="tenantId">ID of the tenant where to search</param>
     /// <returns></returns>
     private async Task<User?> GetMatchingUser(UserLoginRequestDto loginDto, Guid tenantId)
     {
