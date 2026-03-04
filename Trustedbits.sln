@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServer", "ApiServer\ApiServer.csproj", "{D1AB484B-9D52-49D3-BD53-C5EB7665E7E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServerTests", "ApiServerTests\ApiServerTests.csproj", "{BAF2914A-205B-4D92-8A45-BB177A9859A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{D1AB484B-9D52-49D3-BD53-C5EB7665E7E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1AB484B-9D52-49D3-BD53-C5EB7665E7E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1AB484B-9D52-49D3-BD53-C5EB7665E7E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAF2914A-205B-4D92-8A45-BB177A9859A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAF2914A-205B-4D92-8A45-BB177A9859A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAF2914A-205B-4D92-8A45-BB177A9859A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAF2914A-205B-4D92-8A45-BB177A9859A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
