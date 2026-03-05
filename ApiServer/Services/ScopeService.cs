@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Data.Repository;
@@ -11,6 +12,7 @@ namespace Trustedbits.ApiServer.Services;
 
 public class ScopeService : ScopeServiceBase
 {
+    private readonly string ScopeRegex = "^[A-Za-z]+:[A-Za-z]+$";
     private readonly IRepository<Scope> _scopeRepository;
     private readonly IMapper _objectMapper;
 
@@ -30,12 +32,19 @@ public class ScopeService : ScopeServiceBase
         if (string.IsNullOrWhiteSpace(scopeDto.ScopeName))
             scopeDto.ScopeName = scopeDto.ScopeValue;
         
+        // Vefiy if RegEx is respected
+        if(!Regex.IsMatch(scopeDto.ScopeValue, ScopeRegex))
+            return new ScopeServiceResult<ScopeDto>(ScopeErrors.ScopeInvalidData,
+                new ServiceError("ERR_INVALID_SCOPE_VALUE",
+                    "You must provide a valid scope value (in form resource:verb)"));
+        
         var mappedScope = _objectMapper.Map<Scope>(scopeDto);
         
         try
         {
             // Verify if the scope already exists
-            var matching = await _scopeRepository.Get(mappedScope);
+            mappedScope.ParentTenantId = tenantId;
+            var matching = await _scopeRepository.Get(mappedScope.Id);
             if (matching != null)
                 return new ScopeServiceResult<ScopeDto>(ScopeErrors.ScopeAlreadyExists,
                     new ServiceError("SCOPE_ALREADY_EXISTS", "Scope already exists"));

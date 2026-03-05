@@ -1,21 +1,29 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Trustedbits.ApiServer.Data;
 using Trustedbits.ApiServer.Data.AutomapperProfiles;
 using Trustedbits.ApiServer.Data.Repository;
 using Trustedbits.ApiServer.Models.Entities;
 
 namespace ApiServerTests;
 
-public class TestBlueprint<TResource>
+public class TestBlueprint<TResource> where TResource : class
 {
-    protected Mock<IRepository<Scope>>? _scopeRepositoryMock;
-    protected IMapper? _objectMapper;
+    protected Mock<IRepository<TResource>> _resourceRepositoryMock;
+    protected IRepository<TResource> _resourceRepository;
+    protected IMapper _objectMapper;
     
     [TestInitialize]
     public void TestInitialize() 
     {
-        _scopeRepositoryMock = new Mock<IRepository<Scope>>();
+        DbContextOptions options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        _resourceRepository = new EFCoreRepository<TResource>(new AppDbContext(options));
+        
+        _resourceRepositoryMock = new Mock<IRepository<TResource>>();
         var loggerFactory = LoggerFactory.Create(builder => { });
         var config = new MapperConfiguration(cfg =>
         {
@@ -28,6 +36,8 @@ public class TestBlueprint<TResource>
     [TestCleanup]
     public void TestCleanup()
     {
-        _objectMapper = null;        
+        _objectMapper = null;    
+        _resourceRepositoryMock = null;
+        _resourceRepository = null;
     }
 }

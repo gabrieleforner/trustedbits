@@ -28,9 +28,11 @@ public sealed class EFCoreRepository<TEntity> : AbstractDbRepository<TEntity> wh
         await DbContext.SaveChangesAsync();
     }
 
-    public override async Task<TEntity?> Get(TEntity entity)
+    public override async Task<TEntity?> Get(Guid entityId)
     {
-        return await EntitySet.FindAsync(entity);
+        return await EntitySet
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == entityId);
     }
 
     public override async Task<IEnumerable<TEntity?>> Get(Expression<Func<TEntity, bool>> predicate)

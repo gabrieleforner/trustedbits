@@ -8,7 +8,7 @@ public abstract class AbstractDbRepository<TEntity> : IRepository<TEntity> where
     public abstract Task<TEntity> Create(TEntity entity);
     public abstract Task CreateRange(IEnumerable<TEntity> entities);
 
-    public abstract Task<TEntity?> Get(TEntity entity);
+    public abstract Task<TEntity?> Get(Guid entityId);
     public abstract Task<IEnumerable<TEntity?>> Get(Expression<Func<TEntity, bool>> predicate);
     public abstract Task<IEnumerable<TEntity>> GetAll();
     public abstract Task<IEnumerable<TEntity>> GetAll(int pageNumber, int pageSize);

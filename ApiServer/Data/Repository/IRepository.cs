@@ -7,7 +7,7 @@ public interface IRepository<TEntity> where TEntity : class
     public Task<TEntity> Create(TEntity entity);
     public Task CreateRange(IEnumerable<TEntity> entities);
     
-    public Task<TEntity?> Get(TEntity entity);
+    public Task<TEntity?> Get(Guid entityId);
     public Task<IEnumerable<TEntity?>> Get(Expression<Func<TEntity, bool>> predicate);
     public Task<IEnumerable<TEntity>> GetAll();
     public Task<IEnumerable<TEntity>> GetAll(int pageNumber, int pageSize);
