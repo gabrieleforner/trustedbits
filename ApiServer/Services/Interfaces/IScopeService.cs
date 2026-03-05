@@ -29,7 +29,7 @@ public interface IScopeService
     Task<ScopeServiceResult<List<ScopeDto>>> GetScope(Guid tenantId, ScopeQueryDto scopeQueryData);
 
     // Get a list of all scopes (not paginated yet)
-    Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId);
+    Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId, int page, int pageSize);
     
     // Edit an existing scope (queried by scope name)
     Task<ScopeServiceResult<ScopeDto>> EditScope(Guid tenantId, String scopeName, ScopeDto scopeEditData);

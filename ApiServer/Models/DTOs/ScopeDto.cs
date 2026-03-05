@@ -2,10 +2,10 @@ namespace Trustedbits.ApiServer.Models.DTOs;
 
 public class ScopeDto
 {
-    public string ScopeName = "";
+    public string? ScopeName = "";
     public string? ScopeDescription = "";
     public string? ScopeValue = "";
-    public bool IsActive = true;
+    public bool? IsActive = true;
 }
 
 public class ScopeQueryDto

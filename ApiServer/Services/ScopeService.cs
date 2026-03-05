@@ -12,7 +12,7 @@ namespace Trustedbits.ApiServer.Services;
 
 public class ScopeService : ScopeServiceBase
 {
-    private readonly string ScopeRegex = "^[A-Za-z]+:[A-Za-z]+$";
+    private const string ScopeRegex = "^[A-Za-z]+:[A-Za-z]+$";
     private readonly IRepository<Scope> _scopeRepository;
     private readonly IMapper _objectMapper;
 
@@ -65,9 +65,9 @@ public class ScopeService : ScopeServiceBase
         }
     }
 
-    public override async Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId)
+    public override async Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId, int page, int pageSize)
     {
-        throw new NotImplementedException();        
+        throw new NotImplementedException();
     }
 
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetScope(Guid tenantId, ScopeQueryDto scopeQueryData)
@@ -77,7 +77,36 @@ public class ScopeService : ScopeServiceBase
     
     public override async Task<ScopeServiceResult<ScopeDto>> EditScope(Guid tenantId, string scopeName, ScopeDto scopeEditData)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(scopeName))
+            return new ScopeServiceResult<ScopeDto>(ScopeErrors.ScopeInvalidData,
+                new ServiceError("ERR_MISSING_DATA", "You must provide a non-blank scope name."));
+                
+        try
+        {
+            var matching = await _scopeRepository
+                .FirstOrDefault(s => scopeName == s.Name && tenantId == s.ParentTenantId);
+            if (matching == null)
+                return new ScopeServiceResult<ScopeDto>(ScopeErrors.ScopeNotFound,
+                    new ServiceError("ERR_SCOPE_NOT_FOUND", $"No such scope with name {scopeName} exists."));
+
+            matching.Name = scopeEditData.ScopeName ?? matching.Name;
+            matching.Description =  scopeEditData.ScopeDescription ?? matching.Description;
+            matching.IsActive = scopeEditData.IsActive ?? matching.IsActive;
+            
+            await _scopeRepository.UpdateEntity(matching);
+
+            var mapped = _objectMapper.Map<ScopeDto>(matching);
+            return new ScopeServiceResult<ScopeDto>(mapped);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Service fail");
+            Console.WriteLine($"\tMessage: {e.Message}");
+            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            
+            return new ScopeServiceResult<ScopeDto>(ScopeErrors.ServerError,
+                new ServiceError("INTERNAL_ERROR", "You must provide a non-blank scope name."));
+        }
     }
 
     public override async Task<ScopeServiceResult<bool>> DeleteScope(Guid tenantId, string scopeName)

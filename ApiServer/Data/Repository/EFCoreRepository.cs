@@ -51,19 +51,35 @@ public sealed class EFCoreRepository<TEntity> : AbstractDbRepository<TEntity> wh
             .ToListAsync();
     }
 
-    public override async Task<IEnumerable<TEntity>> GetAll(int pageNumber, int pageSize)
+    public override async Task<IEnumerable<TEntity>> GetAll(Guid tenantId, int pageNumber, int pageSize)
     {
         var entities = await EntitySet
             .AsNoTracking()
+            .Where(e => EF.Property<Guid>(e, "Id") == tenantId)
             .ToListAsync();
         return entities
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize);
     }
 
+    public override async Task<TEntity?> GetTracked(Guid entityId)
+    {
+        return await EntitySet
+            .AsTracking()
+            .FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == entityId);
+    }
+
+    public override async Task<IEnumerable<TEntity?>> GetTracked(Expression<Func<TEntity, bool>> predicate)
+    {
+        var matching = await EntitySet
+            .AsTracking()
+            .Where(predicate)
+            .ToListAsync();
+        return matching;
+    }
+
     public override async Task UpdateEntity(TEntity entity)
     {
-        EntitySet.Update(entity);
         await DbContext.SaveChangesAsync();
     }
 

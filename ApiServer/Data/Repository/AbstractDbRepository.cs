@@ -11,7 +11,9 @@ public abstract class AbstractDbRepository<TEntity> : IRepository<TEntity> where
     public abstract Task<TEntity?> Get(Guid entityId);
     public abstract Task<IEnumerable<TEntity?>> Get(Expression<Func<TEntity, bool>> predicate);
     public abstract Task<IEnumerable<TEntity>> GetAll();
-    public abstract Task<IEnumerable<TEntity>> GetAll(int pageNumber, int pageSize);
+    public abstract Task<IEnumerable<TEntity>> GetAll(Guid tenantId, int pageNumber, int pageSize);
+    public abstract Task<TEntity?> GetTracked(Guid entityId);
+    public abstract Task<IEnumerable<TEntity?>> GetTracked(Expression<Func<TEntity, bool>> predicate);
 
     public abstract Task UpdateEntity(TEntity entity);
     public abstract Task DeleteEntity(TEntity entity);
@@ -26,6 +28,12 @@ public abstract class AbstractDbRepository<TEntity> : IRepository<TEntity> where
     public async Task<TEntity?> FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
     { 
         return (await Get(predicate))
+            .FirstOrDefault();
+    }
+    
+    public async Task<TEntity?> FirstOrDefaultTracked(Expression<Func<TEntity, bool>> predicate)
+    { 
+        return (await GetTracked(predicate))
             .FirstOrDefault();
     }
 }

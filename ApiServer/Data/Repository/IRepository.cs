@@ -10,7 +10,10 @@ public interface IRepository<TEntity> where TEntity : class
     public Task<TEntity?> Get(Guid entityId);
     public Task<IEnumerable<TEntity?>> Get(Expression<Func<TEntity, bool>> predicate);
     public Task<IEnumerable<TEntity>> GetAll();
-    public Task<IEnumerable<TEntity>> GetAll(int pageNumber, int pageSize);
+    public Task<IEnumerable<TEntity>> GetAll(Guid tenantId, int pageNumber, int pageSize);
+    
+    public Task<TEntity?> GetTracked(Guid entityId);
+    public Task<IEnumerable<TEntity?>> GetTracked(Expression<Func<TEntity, bool>> predicate);
     
     public Task UpdateEntity(TEntity entity);
     

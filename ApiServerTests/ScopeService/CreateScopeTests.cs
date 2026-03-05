@@ -10,11 +10,13 @@ namespace ApiServerTests.ScopeService;
 [TestClass]
 public class CreateScopeTests : TestBlueprint<Scope>
 {
+    IScopeService _scopeService;
+    
     [TestMethod]
     public async Task TestEmptyScopeValue()
     {
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
             ScopeValue = ""
@@ -28,8 +30,8 @@ public class CreateScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestBlankScopeValue()
     {
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
             ScopeValue = "   "
@@ -43,8 +45,8 @@ public class CreateScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestRegexScopeValue()
     {
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
             ScopeValue = "resource.verb"
@@ -65,10 +67,10 @@ public class CreateScopeTests : TestBlueprint<Scope>
             ScopeValue = "scope:value",
         };
         
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
-        await scopeService.CreateScope(tenantId, creationDto);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
+        await _scopeService.CreateScope(tenantId, creationDto);
         
-        var result = await scopeService.CreateScope(tenantId, creationDto);
+        var result = await _scopeService.CreateScope(tenantId, creationDto);
         
         Assert.AreEqual(false, result.IsSuccess);
         Assert.IsNotNull(result.ErrorData);
@@ -83,8 +85,8 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .ReturnsAsync((object src) => src as Scope);
         
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "",
             ScopeValue = "scope:value"
@@ -102,8 +104,8 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .ReturnsAsync((object src) => src as Scope);
         
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "    ",
             ScopeValue = "scope:value"
@@ -122,8 +124,8 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .Throws<DBConcurrencyException>();
         
-        var scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
-        var result = await scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
             ScopeValue = "scope:value",
