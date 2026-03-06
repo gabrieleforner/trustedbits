@@ -109,12 +109,32 @@ public class ScopeService : ScopeServiceBase
                 new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
         }
     }
-
-    //TODO: Implement me
+    
     /// <inheritdoc/>
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetScope(Guid tenantId, ScopeQueryDto scopeQueryData)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var matching = await _scopeRepository
+                .Get(s => s.ParentTenantId == tenantId && (
+                        s.Value.Contains(scopeQueryData.ContainsInValue) ||
+                        s.Name.Contains(scopeQueryData.ContainsInName) ||
+                        s.IsActive == scopeQueryData.IsActive
+                    ));
+            
+            var mappedScopes = _objectMapper.Map<List<ScopeDto>>(matching);
+            return new ScopeServiceResult<List<ScopeDto>>(mappedScopes);
+        }
+        catch (Exception e)
+        {
+            // Handle DB errors (return 500)
+            Console.WriteLine($"Service fail");
+            Console.WriteLine($"\tMessage: {e.Message}");
+            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            
+            return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ServerError, 
+                new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
+        }
     }
     
     /// <inheritdoc/>
