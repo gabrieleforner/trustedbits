@@ -82,11 +82,32 @@ public class ScopeService : ScopeServiceBase
         }
     }
 
-    // TODO: Implement Me
     /// <inheritdoc/>
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId, int page, int pageSize)
     {
-        throw new NotImplementedException();
+        if (page < 1 )
+            return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ScopeInvalidData,
+                new ServiceError("ERR_INVALID_PAGE_NUM", "You must provide a positive page number."));
+        if(pageSize < 1)
+            return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ScopeInvalidData,
+                new ServiceError("ERR_INVALID_PAGE_SIZE", "You must provide a positive page size."));
+
+        try
+        {
+            var matching = await _scopeRepository.Get(s => s.ParentTenantId == tenantId);
+            var mappedScopes = _objectMapper.Map<List<ScopeDto>>(matching);
+            return new ScopeServiceResult<List<ScopeDto>>(mappedScopes);
+        }
+        catch (Exception e)
+        {
+            // Handle DB errors (return 500)
+            Console.WriteLine($"Service fail");
+            Console.WriteLine($"\tMessage: {e.Message}");
+            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            
+            return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ServerError, 
+                new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
+        }
     }
 
     //TODO: Implement me
