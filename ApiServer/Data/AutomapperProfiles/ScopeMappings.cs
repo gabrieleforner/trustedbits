@@ -15,7 +15,9 @@ public class ScopeMappings : Profile
             .ForMember(dest => dest.ScopeValue,
                 opt => opt.MapFrom(src => src.Value))
             .ForMember(dest => dest.IsActive,
-                opt => opt.MapFrom(src => src.IsActive));
+                opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.ScopeDescription,
+                opt => opt.MapFrom(src => src.Description));
 
         CreateMap<ScopeDto, Scope>()
             .ForMember(dest => dest.Value,
@@ -23,6 +25,8 @@ public class ScopeMappings : Profile
             .ForMember(dest => dest.Name,
                 opt => opt.MapFrom(src => src.ScopeName))
             .ForMember(dest => dest.IsActive,
-                opt => opt.MapFrom(src => src.IsActive));
+                opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.Description,
+                opt => opt.MapFrom(src => src.ScopeDescription));
     }        
 }
