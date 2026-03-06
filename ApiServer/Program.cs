@@ -6,12 +6,23 @@ using Trustedbits.ApiServer.Data.Repository;
 
 namespace Trustedbits.ApiServer;
 
+
+/// <summary>
+/// Entrypoint class of the application
+/// </summary>
 public class Program
 {
+    
+    /// <summary>
+    /// Entrypoint method of the application
+    /// </summary>
     public static void Main(string[] args)
     {
+        // Create application and  set up Dependency Injection
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllers();
+        
+        // Setup Entity Framework and Identity Framework
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlServer(builder.Configuration["SQL_CONNECTION_STRING"]);
@@ -23,8 +34,12 @@ public class Program
             }
         });
         builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<AppDbContext>();
+        
+        
+        // Setup DI
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EFCoreRepository<>));
         
+        // Setup AutoMapper profiles
         builder.Services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<ScopeMappings>();
@@ -34,6 +49,8 @@ public class Program
         
         var app = builder.Build();
 
+        
+        // Seed database tables
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;

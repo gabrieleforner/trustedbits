@@ -32,7 +32,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>
         base.OnModelCreating(modelBuilder);
         
         // Table Names
-        // 
         modelBuilder.Entity<Tenant>().ToTable("TrustedbitsTenants");
         modelBuilder.Entity<TenantSettings>().ToTable("TrustedbitsTenantSettings");
         modelBuilder.Entity<User>().ToTable("TrustedbitsUsers");

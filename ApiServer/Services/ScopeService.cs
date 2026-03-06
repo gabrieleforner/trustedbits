@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Data.Repository;
 using Trustedbits.ApiServer.Models;
 using Trustedbits.ApiServer.Models.DTOs;
@@ -10,18 +9,36 @@ using Trustedbits.ApiServer.Services.Interfaces;
 
 namespace Trustedbits.ApiServer.Services;
 
+/// <inheritdoc/>
 public class ScopeService : ScopeServiceBase
 {
+    /// <summary>
+    /// Regular Expression used to validate the format of the scope value
+    /// </summary>
     private const string ScopeRegex = "^[A-Za-z]+:[A-Za-z]+$";
+    
+    /// <summary>
+    /// Instance of the DB abstraction for the scopes table
+    /// </summary>
     private readonly IRepository<Scope> _scopeRepository;
+
+    /// <summary>
+    /// Instance of AutoMapper
+    /// </summary>
     private readonly IMapper _objectMapper;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="scopeRepository">Instance of <see cref="IRepository{Scope}"/></param>
+    /// <param name="objectMapper">Instance of AutoMapper</param>
     public ScopeService(IRepository<Scope> scopeRepository, IMapper objectMapper)
     {
         _scopeRepository = scopeRepository;
         _objectMapper = objectMapper;
     }
 
+    /// <inheritdoc/>
     public override async Task<ScopeServiceResult<ScopeDto>> CreateScope(Guid tenantId, ScopeDto scopeDto)
     {
         // Validate scope value
@@ -65,16 +82,21 @@ public class ScopeService : ScopeServiceBase
         }
     }
 
+    // TODO: Implement Me
+    /// <inheritdoc/>
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetAllScopes(Guid tenantId, int page, int pageSize)
     {
         throw new NotImplementedException();
     }
 
+    //TODO: Implement me
+    /// <inheritdoc/>
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetScope(Guid tenantId, ScopeQueryDto scopeQueryData)
     {
         throw new NotImplementedException();
     }
     
+    /// <inheritdoc/>
     public override async Task<ScopeServiceResult<ScopeDto>> EditScope(Guid tenantId, string scopeName, ScopeDto scopeEditData)
     {
         if (string.IsNullOrEmpty(scopeName))
@@ -109,8 +131,37 @@ public class ScopeService : ScopeServiceBase
         }
     }
 
+    /// <inheritdoc/>
     public override async Task<ScopeServiceResult<bool>> DeleteScope(Guid tenantId, string scopeName)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(scopeName))
+            return new ScopeServiceResult<bool>(ScopeErrors.ScopeInvalidData,
+                new ServiceError("ERR_MISSING_DATA", $"You must provide a non-blank scope name."));
+        
+        try
+        {
+            // Verify if tenant exists
+            var matching = await _scopeRepository
+                .FirstOrDefault(s => s.ParentTenantId == tenantId&& s.Name == scopeName);
+            if (matching == null)
+            {
+                return new ScopeServiceResult<bool>(ScopeErrors.ScopeNotFound,
+                    new ServiceError("ERR_SCOPE_NOT_FOUND", $"No such scope with name {scopeName} exists."));
+            }
+            
+            // Delete the matching tenant
+            await _scopeRepository.DeleteEntity(matching);
+            return new ScopeServiceResult<bool>(true);
+        }
+        catch (Exception e)
+        {
+            // Handle DB errors (return 500)
+            Console.WriteLine($"Service fail");
+            Console.WriteLine($"\tMessage: {e.Message}");
+            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            
+            return new ScopeServiceResult<bool>(ScopeErrors.ServerError, 
+                new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
+        }
     }
 }

@@ -56,6 +56,30 @@ public class EditScopeTests : TestBlueprint<Scope>
         Assert.AreEqual("An example scope description.", result.Success.ScopeDescription);
         Assert.AreEqual("scope:value", result.Success.ScopeValue);
     }
+
+    [TestMethod]
+    public async Task TestScopeNotFound()
+    {
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
+        var tenantId = Guid.NewGuid();
+        var scopeDto = new ScopeDto
+        {
+            ScopeName = "TestScope",
+            ScopeDescription = "An example scope description.",
+            ScopeValue = "scope:value"
+        };
+
+        scopeDto.ScopeName = null;
+        scopeDto.ScopeValue = null;
+        scopeDto.ScopeDescription = null;
+        
+        var result = await _scopeService.EditScope(tenantId, "TestScope", scopeDto);
+        
+        Assert.IsNotNull(result.ErrorData);
+        Assert.AreEqual(true, result.IsFailed);
+        Assert.AreEqual(ScopeErrors.ScopeNotFound, result.Error);
+        Assert.AreEqual("ERR_SCOPE_NOT_FOUND", result.ErrorData.ErrorString);
+    }
     
     [TestMethod]
     public async Task TestDbFail()
