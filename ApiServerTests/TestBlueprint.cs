@@ -28,6 +28,7 @@ public class TestBlueprint<TResource> where TResource : class
         var config = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile<ScopeMappings>();
+            cfg.AddProfile<RoleMappings>();
         }, loggerFactory);
         
         _objectMapper = config.CreateMapper();
