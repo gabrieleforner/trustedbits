@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Trustedbits.ApiServer.Models.Entities;
 using Trustedbits.ApiServer.Services.Interfaces;
@@ -14,7 +15,7 @@ public class GetAllScopesTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestPageSizeNegative()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.GetAllScopes(Guid.NewGuid(), 1, -1);
         
         Assert.IsNull(result.Success);
@@ -27,7 +28,7 @@ public class GetAllScopesTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestPageNumberNegative()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.GetAllScopes(Guid.NewGuid(), -1, 100);
         
         Assert.IsNull(result.Success);
@@ -44,7 +45,7 @@ public class GetAllScopesTests : TestBlueprint<Scope>
             .Setup(x => x.Get(It.IsAny<Expression<Func<Scope, bool>>>()))
             .Throws<DbUpdateException>();
 
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.GetAllScopes(Guid.NewGuid(), 1, 100);
         
         Assert.IsNull(result.Success);

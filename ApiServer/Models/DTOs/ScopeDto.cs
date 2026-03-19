@@ -10,21 +10,21 @@ public class ScopeDto
     /// <summary>
     /// The name of the scope (e.g. "k8s_read_pods")
     /// </summary>
-    public string? ScopeName = "";
+    public string? ScopeName { get; set; } = "";
     /// <summary>
     /// Description of what this scope grants
     /// </summary>
-    public string? ScopeDescription = "";
+    public string? ScopeDescription { get; set; } = "";
     
     /// <summary>
     /// Actual scope string (e.g. "kubernets_pod:read")
     /// </summary>
-    public string? ScopeValue = "";
+    public string? ScopeValue { get; set; } = "";
     
     /// <summary>
     /// Indicates wheter this scope must be considered "valid" or not
     /// </summary>
-    public bool? IsActive = true;
+    public bool? IsActive { get; set; } = true;
 }
 
 /// <summary>
@@ -33,17 +33,17 @@ public class ScopeDto
 public class ScopeQueryDto
 {
     /// <summary>
-    /// Keyword contained in scope name 
+    /// Keywords contained in scope name 
     /// </summary>
-    public string ContainsInName = string.Empty;
+    public string KeywordInName { get; set; } = "";
     
     /// <summary>
-    /// Keyword contained in scope value 
+    /// Keywords contained in scope value 
     /// </summary>
-    public string ContainsInValue = string.Empty;
+    public string KeywordInValue { get; set; } = "";
     
     /// <summary>
     /// If the scope is active or not
     /// </summary>
-    public bool IsActive = true;
+    public bool? IsActive = true;
 }

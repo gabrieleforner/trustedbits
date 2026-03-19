@@ -2,8 +2,8 @@ namespace Trustedbits.ApiServer.Models;
 
 public class ServiceError
 {
-    public string ErrorString;
-    public string ErrorMessage;
+    public string ErrorString { get; set; }
+    public string ErrorMessage { get; set; }
     
     public ServiceError(string errorString, string errorMessage)
     {

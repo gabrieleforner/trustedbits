@@ -3,6 +3,8 @@ using Trustedbits.ApiServer.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Data.AutomapperProfiles;
 using Trustedbits.ApiServer.Data.Repository;
+using Trustedbits.ApiServer.Services;
+using Trustedbits.ApiServer.Services.Interfaces;
 
 namespace Trustedbits.ApiServer;
 
@@ -46,9 +48,10 @@ public class Program
             cfg.AddProfile<RoleMappings>();
             cfg.AddProfile<TenantMappings>();
         });
+
+        builder.Services.AddScoped<IScopeService, ScopeService>();
         
         var app = builder.Build();
-
         
         // Seed database tables
         using (var scope = app.Services.CreateScope())

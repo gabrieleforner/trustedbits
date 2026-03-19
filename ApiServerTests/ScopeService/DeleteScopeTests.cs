@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Trustedbits.ApiServer.Models.DTOs;
 using Trustedbits.ApiServer.Models.Entities;
@@ -16,7 +17,7 @@ public class DeleteScopeTests : TestBlueprint<Scope>
     public async Task TestEmptyScopeName()
     {
         var tenantId = Guid.NewGuid();
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.DeleteScope(tenantId, "");
         
         Assert.IsNotNull(result.ErrorData);
@@ -29,7 +30,7 @@ public class DeleteScopeTests : TestBlueprint<Scope>
     public async Task TestScopeNotFound()
     {
         var tenantId = Guid.NewGuid();
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
 
         await _scopeService.CreateScope(tenantId, new ScopeDto
         {
@@ -54,7 +55,7 @@ public class DeleteScopeTests : TestBlueprint<Scope>
             .Setup(i => i.FirstOrDefault(It.IsAny<Expression<Func<Scope, bool>>>()))
             .Throws<DbUpdateException>();
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.DeleteScope(Guid.NewGuid(), "ExampleScope");
         
         Assert.IsNotNull(result.ErrorData);

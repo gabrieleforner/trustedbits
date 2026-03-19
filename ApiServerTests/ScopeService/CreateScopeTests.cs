@@ -1,5 +1,6 @@
 using Moq;
 using System.Data;
+using Microsoft.Extensions.Logging.Abstractions;
 using Trustedbits.ApiServer.Data.Repository;
 using Trustedbits.ApiServer.Models.DTOs;
 using Trustedbits.ApiServer.Models.Entities;
@@ -15,7 +16,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestEmptyScopeValue()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
@@ -30,7 +31,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestBlankScopeValue()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
@@ -45,7 +46,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestRegexScopeValue()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",
@@ -67,7 +68,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
             ScopeValue = "scope:value",
         };
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper, NullLogger.Instance);
         await _scopeService.CreateScope(tenantId, creationDto);
         
         var result = await _scopeService.CreateScope(tenantId, creationDto);
@@ -85,7 +86,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .ReturnsAsync((object src) => src as Scope);
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "",
@@ -104,7 +105,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .ReturnsAsync((object src) => src as Scope);
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "    ",
@@ -124,7 +125,7 @@ public class CreateScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.Create(It.IsAny<Scope>()))
             .Throws<DBConcurrencyException>();
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.CreateScope(Guid.NewGuid(), new ScopeDto
         {
             ScopeName = "TestScope",

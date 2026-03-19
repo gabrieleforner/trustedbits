@@ -1,5 +1,6 @@
 using System.Data;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Trustedbits.ApiServer.Models.DTOs;
 using Trustedbits.ApiServer.Models.Entities;
@@ -15,7 +16,7 @@ public class EditScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestMissingScopeName()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var tenantId = Guid.NewGuid();
         var scopeDto = new ScopeDto
         {
@@ -34,7 +35,7 @@ public class EditScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestEmptyScopeDto()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper, NullLogger.Instance);
         var tenantId = Guid.NewGuid();
         var scopeDto = new ScopeDto
         {
@@ -60,7 +61,7 @@ public class EditScopeTests : TestBlueprint<Scope>
     [TestMethod]
     public async Task TestScopeNotFound()
     {
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepository, _objectMapper, NullLogger.Instance);
         var tenantId = Guid.NewGuid();
         var scopeDto = new ScopeDto
         {
@@ -87,7 +88,7 @@ public class EditScopeTests : TestBlueprint<Scope>
         _resourceRepositoryMock.Setup(r => r.FirstOrDefault(It.IsAny<Expression<Func<Scope, bool>>>()))
             .Throws<DBConcurrencyException>();
         
-        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper);
+        _scopeService = new Trustedbits.ApiServer.Services.ScopeService(_resourceRepositoryMock.Object, _objectMapper, NullLogger.Instance);
         var result = await _scopeService.EditScope(Guid.NewGuid(), "GenericScope", new ScopeDto
         {
             ScopeName = "TestScope",

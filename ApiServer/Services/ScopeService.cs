@@ -27,15 +27,18 @@ public class ScopeService : ScopeServiceBase
     /// </summary>
     private readonly IMapper _objectMapper;
 
+    private readonly ILogger _logger;
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="scopeRepository">Instance of <see cref="IRepository{Scope}"/></param>
     /// <param name="objectMapper">Instance of AutoMapper</param>
-    public ScopeService(IRepository<Scope> scopeRepository, IMapper objectMapper)
+    public ScopeService(IRepository<Scope> scopeRepository, IMapper objectMapper, ILogger logger)
     {
         _scopeRepository = scopeRepository;
         _objectMapper = objectMapper;
+        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -49,7 +52,7 @@ public class ScopeService : ScopeServiceBase
         if (string.IsNullOrWhiteSpace(scopeDto.ScopeName))
             scopeDto.ScopeName = scopeDto.ScopeValue;
         
-        // Vefiy if RegEx is respected
+        // Verify if RegEx is respected
         if(!Regex.IsMatch(scopeDto.ScopeValue, ScopeRegex))
             return new ScopeServiceResult<ScopeDto>(ScopeErrors.ScopeInvalidData,
                 new ServiceError("ERR_INVALID_SCOPE_VALUE",
@@ -72,10 +75,10 @@ public class ScopeService : ScopeServiceBase
         }
         catch (Exception e)
         {
-            // Handle DB errors (return 500)
-            Console.WriteLine($"Service fail");
-            Console.WriteLine($"\tMessage: {e.Message}");
-            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            // Handle server error (HTTP 500)
+            _logger.LogError(e, "Service fail");
+            _logger.LogError($"Message: {e.Message}");
+            _logger.LogError($"Stacktrace: {e.StackTrace}");
             
             return new ScopeServiceResult<ScopeDto>(ScopeErrors.ServerError, 
                 new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
@@ -101,20 +104,40 @@ public class ScopeService : ScopeServiceBase
         catch (Exception e)
         {
             // Handle DB errors (return 500)
-            Console.WriteLine($"Service fail");
-            Console.WriteLine($"\tMessage: {e.Message}");
-            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            _logger.LogError(e, "Service fail");
+            _logger.LogError($"Message: {e.Message}");
+            _logger.LogError($"Stacktrace: {e.StackTrace}");
             
             return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ServerError, 
                 new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
         }
     }
 
-    //TODO: Implement me
     /// <inheritdoc/>
     public override async Task<ScopeServiceResult<List<ScopeDto>>> GetScope(Guid tenantId, ScopeQueryDto scopeQueryData)
-    {
-        throw new NotImplementedException();
+    { 
+        try
+        {
+            var matchingScopes = await _scopeRepository.Get(s => s.ParentTenantId == tenantId && (
+                s.Name.Contains(scopeQueryData.KeywordInName) ||
+                s.Value.Contains(scopeQueryData.KeywordInValue)
+            ));
+            
+            var mappedScopes = _objectMapper.Map<List<ScopeDto>>(matchingScopes);
+            return new ScopeServiceResult<List<ScopeDto>>(mappedScopes);
+        }
+        catch (Exception e)
+        {
+            // Handle server error (HTTP 500)
+            _logger.LogError(e, "Service fail");
+            _logger.LogError($"Message: {e.Message}");
+            _logger.LogError($"Stacktrace: {e.StackTrace}");
+
+            return new ScopeServiceResult<List<ScopeDto>>(ScopeErrors.ServerError,
+                new ServiceError("INTERNAL_ERROR", "An error occured while trying to query scopes."));
+        }
+
+        throw new NotFiniteNumberException();
     }
     
     /// <inheritdoc/>
@@ -143,15 +166,14 @@ public class ScopeService : ScopeServiceBase
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Service fail");
-            Console.WriteLine($"\tMessage: {e.Message}");
-            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            _logger.LogError(e, "Service fail");
+            _logger.LogError($"Message: {e.Message}");
+            _logger.LogError($"Stacktrace: {e.StackTrace}");
             
             return new ScopeServiceResult<ScopeDto>(ScopeErrors.ServerError,
                 new ServiceError("INTERNAL_ERROR", "You must provide a non-blank scope name."));
         }
     }
-
     /// <inheritdoc/>
     public override async Task<ScopeServiceResult<bool>> DeleteScope(Guid tenantId, string scopeName)
     {
@@ -177,9 +199,9 @@ public class ScopeService : ScopeServiceBase
         catch (Exception e)
         {
             // Handle DB errors (return 500)
-            Console.WriteLine($"Service fail");
-            Console.WriteLine($"\tMessage: {e.Message}");
-            Console.WriteLine($"\tStack Frame: {e.StackTrace}");
+            _logger.LogError(e, "Service fail");
+            _logger.LogError($"Message: {e.Message}");
+            _logger.LogError($"Stacktrace: {e.StackTrace}");
             
             return new ScopeServiceResult<bool>(ScopeErrors.ServerError, 
                 new ServiceError("INTERNAL_ERROR", "An unknown error occured while trying to create a new scope."));
