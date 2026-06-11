@@ -1,0 +1,13 @@
+# .NET artifacts/secrets
+bin/
+obj/
+/packages/
+*/Properties/
+*/Migrations/
+
+# ReSharper/Rider directories/files
+riderModule.iml
+/_ReSharper.Caches/
+
+## Miscellaneous
+*.env
