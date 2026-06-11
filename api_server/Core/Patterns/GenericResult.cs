@@ -1,4 +1,4 @@
-using Trustedbits.ApiServer.Core.DTO;
+using Trustedbits.ApiServer.Core.Dto;
 
 namespace Trustedbits.ApiServer.Core.Patterns;
 

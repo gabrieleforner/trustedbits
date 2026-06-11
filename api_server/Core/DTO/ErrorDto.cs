@@ -1,4 +1,4 @@
-namespace Trustedbits.ApiServer.Core.DTO;
+namespace Trustedbits.ApiServer.Core.Dto;
 
 public class ErrorDto
 {

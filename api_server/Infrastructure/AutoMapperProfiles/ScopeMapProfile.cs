@@ -1,5 +1,5 @@
 using AutoMapper;
-using Trustedbits.ApiServer.Core.DTO;
+using Trustedbits.ApiServer.Core.Dto;
 using Trustedbits.ApiServer.Domain.Entity;
 
 namespace Trustedbits.ApiServer.Infrastructure.AutoMapperProfiles;

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Trustedbits.ApiServer.Core.Contracts;
-using Trustedbits.ApiServer.Core.DTO;
+using Trustedbits.ApiServer.Core.Dto;
 using Trustedbits.ApiServer.Core.Patterns;
 using Trustedbits.ApiServer.Domain.Entity;
 using Trustedbits.ApiServer.Domain.Repository;
