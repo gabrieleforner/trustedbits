@@ -19,7 +19,7 @@ public class ScopeService : IScopeService
         _repository = repository;
         _logger = logger;
     }
-
+ 
     public async Task<ScopeServiceResult<ScopeDto>> CreateScope(ScopeDto scope)
     {
         // Validate schema contents
@@ -36,7 +36,7 @@ public class ScopeService : IScopeService
         
         // Check for conflicting unique values
         var nameConflicting = await _repository.GetByNameAsync(scope.ScopeName);
-        var valueConflicting = await _repository.GetByNameAsync(scope.ScopeValue);
+        var valueConflicting = await _repository.GetByValueAsync(scope.ScopeValue);
 
         // Notify name conflicts
         if (nameConflicting != null)
@@ -75,7 +75,10 @@ public class ScopeService : IScopeService
 
     public async Task<ScopeServiceResult<ScopeDto>> GetScope(Guid id)
     {
-        throw new NotImplementedException();
+        if(id == Guid.Empty)
+            return new ScopeServiceResult<ScopeDto>(new ErrorDto("Invalid scope ID"), ErrorType.BadRequest);
+        var result = await _repository.GetByIdAsync(id);
+        return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
     public async Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> GetAllScopes(int page, int pageSize)
