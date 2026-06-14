@@ -34,56 +34,52 @@ public class ScopeService : IScopeService
             return new ScopeServiceResult<ScopeDto>(errorDto, ErrorType.BadRequest);
         }
         
-        // Check for conflicting unique values
+        // Check for conflicting unique values (name/value)
         var nameConflicting = await _repository.GetByNameAsync(scope.ScopeName);
-        var valueConflicting = await _repository.GetByValueAsync(scope.ScopeValue);
-
-        // Notify name conflicts
         if (nameConflicting != null)
-        {
-            var errorDto = new ErrorDto(
-                "Scope name already exists",
-                new Dictionary<string, object>
-                {
-                    { "ConflictingAttribute", "ScopeName" },
-                    { "ConflictingValue", scope.ScopeName }
-                }
-            );
-            return new ScopeServiceResult<ScopeDto>(errorDto, ErrorType.Conflict);
-        }
-        // Notify value conflicts
+            return ScopeHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
+        
+        var valueConflicting = await _repository.GetByValueAsync(scope.ScopeValue);
         if (valueConflicting != null)
-        {
-            var errorDto = new ErrorDto(
-                "Scope name already exists",
-                new Dictionary<string, object>
-                {
-                    { "ConflictingAttribute", "ScopeValue" },
-                    { "ConflictingValue", scope.ScopeValue }
-                }
-            );
-            return new ScopeServiceResult<ScopeDto>(errorDto, ErrorType.Conflict);
-        }
+            return ScopeHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
 
-        // Write new scope to the DB
+        // Write new scope to the DB and log
         var mappedScope = _mapper.Map<ScopeEntity>(scope);
         var result = await _repository.CreateAsync(mappedScope);
+        _logger.LogInformation("Scope created successfully (ID={id})", result.Id);
         
-        // Return written scope
+        // Return written scope in DTO format
         return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
     public async Task<ScopeServiceResult<ScopeDto>> GetScope(Guid id)
     {
+        // Check if a DTO has been provided
         if(id == Guid.Empty)
-            return new ScopeServiceResult<ScopeDto>(new ErrorDto("Invalid scope ID"), ErrorType.BadRequest);
+            return ScopeHelpers<ScopeDto>.InvalidScopeIdError();
+        
+        // Look up the repository, if null return not found error, else return mapped DTO
         var result = await _repository.GetByIdAsync(id);
+        if(result == null)
+            return ScopeHelpers<ScopeDto>.NotFoundError(id);
         return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
     public async Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> GetAllScopes(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        // Validate paging settings
+        var validationError = ScopeHelpers<IAsyncEnumerable<ScopeDto>>.ValidatePagingSettings(page, pageSize);
+        if (validationError != null)
+            return validationError;
+
+        // Retrieve and map all the scope entries in page
+        var scopeEntities = await _repository.GetAllAsync(page, pageSize);
+        var mappedScopes = _mapper.Map<IEnumerable<ScopeEntity>>(scopeEntities)
+            .Select(entity => _mapper.Map<ScopeDto>(entity))
+            .ToAsyncEnumerable();
+
+        // Return DTOs
+        return new ScopeServiceResult<IAsyncEnumerable<ScopeDto>>(mappedScopes);
     }
 
     public async Task<ScopeServiceResult<IEnumerable<ScopeDto>>> SearchScopes(string term, int page, int size)
