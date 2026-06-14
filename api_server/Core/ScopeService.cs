@@ -122,6 +122,7 @@ public class ScopeService : IScopeService
             updateTarget.DisplayName = scope.ScopeName;
             updateTarget.NormalizedName = scope.ScopeName.ToLower();
             isModified = true;
+            _logger.LogInformation("Scope NAME updated successfully (TARGET_ID={id})", id);
         }
         if (modifyValue)
         {
@@ -132,11 +133,13 @@ public class ScopeService : IScopeService
 
             updateTarget.Value = scope.ScopeValue.ToLower();
             isModified = true;
+            _logger.LogInformation("Scope VALUE updated successfully (TARGET_ID={id})", id);
         }
         if (modifyDesc)
         {
             updateTarget.Description = scope.ScopeDescription;
             isModified = true;
+            _logger.LogInformation("Scope DESCRIPTION updated successfully (TARGET_ID={id})", id);
         }
 
         // Apply update only if at least one field has been modified
@@ -149,6 +152,20 @@ public class ScopeService : IScopeService
 
     public async Task<ScopeServiceResult<bool>> DeleteScope(Guid id)
     {
-        throw new NotImplementedException();
+        // Validate the GUID of target scope
+        if (id == Guid.Empty)
+            return ScopeHelpers<bool>.InvalidScopeIdError();
+        
+        // Find the target scope, if not found return error
+        var deleteTarget = await _repository.GetByIdAsync(id);
+        if (deleteTarget == null)
+            return ScopeHelpers<bool>.NotFoundError(id);
+        
+        // Delete the scope and log
+        await _repository.DeleteAsync(deleteTarget);
+        _logger.LogInformation("Scope deleted successfully (ID={id})", id);
+        
+        // Return success
+        return new ScopeServiceResult<bool>(true);
     }
 }
