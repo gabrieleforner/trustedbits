@@ -30,8 +30,8 @@ public static class ScopeHelpers<T>
     
     public static ScopeServiceResult<T> InvalidScopeIdError()
     {
-        var errorDto = new ErrorDto("Scope not found");
-        return new ScopeServiceResult<T>(errorDto, ErrorType.NotFound);
+        var errorDto = new ErrorDto("Scope ID is not valid");
+        return new ScopeServiceResult<T>(errorDto, ErrorType.BadRequest);
     }
 
     public static ScopeServiceResult<T>? ValidatePagingSettings(int page, int pageSize)

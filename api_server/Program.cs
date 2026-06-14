@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Trustedbits.ApiServer.Adapters.Http;
+using Trustedbits.ApiServer.Core;
+using Trustedbits.ApiServer.Core.Contracts;
 using Trustedbits.ApiServer.Domain.Repository;
 using Trustedbits.ApiServer.Infrastructure.AutoMapperProfiles;
 using Trustedbits.ApiServer.Infrastructure.EFCore;
@@ -20,14 +23,13 @@ public class Program
         SetupDIBindings(builder);
         SetupMapper(builder);
 
-        builder.Services.AddControllers();
+        HttpSetupUtils.SetupMiddlewares(builder);
         
         var app = builder.Build();
 
         SetupDatabase(app);
+        HttpSetupUtils.SetupPipeline(app);
         
-        app.UseHttpsRedirection();
-        app.MapControllers();
         app.Run();
     }
 
@@ -43,9 +45,9 @@ public class Program
     {
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericGenericRepositoryEfCoreImpl<>));
         builder.Services.AddScoped<IScopeRepository, ScopeRepositoryImpl>();
-        builder.Services.AddScoped<IScopeRepository, ScopeRepositoryImpl>();
+        builder.Services.AddScoped<IScopeService, ScopeService>();
     }
-
+    
     private static void SetupDatabase(WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
