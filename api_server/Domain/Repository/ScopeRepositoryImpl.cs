@@ -16,6 +16,12 @@ public class ScopeRepositoryImpl(IGenericRepository<ScopeEntity> genericReposito
         return await _genericRepository.GetFirstOrDefaultAsync(s => s.Id == id, ct);
     }
 
+    public async Task<IEnumerable<ScopeEntity>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
+    {
+        var rows = await _genericRepository.GetAllAsync(page, pageSize, ct);
+        return rows;
+    }
+
     public async Task<ScopeEntity?> GetByNameAsync(string name, CancellationToken ct = default)
     {
         var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.NormalizedName == name.ToLower(), ct);

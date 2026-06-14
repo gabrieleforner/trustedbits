@@ -8,6 +8,7 @@ public interface IScopeRepository
     
     // Untracked
     Task<ScopeEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<IEnumerable<ScopeEntity>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
     Task<ScopeEntity?> GetByNameAsync(string name, CancellationToken ct = default);
     Task<ScopeEntity?> GetByValueAsync(string value, CancellationToken ct = default);
     Task<IEnumerable<ScopeEntity>> GetByNameContainsAsync(string term, int page, int pageSize, CancellationToken ct = default);
