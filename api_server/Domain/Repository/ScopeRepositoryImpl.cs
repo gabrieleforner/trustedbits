@@ -34,19 +34,17 @@ public class ScopeRepositoryImpl(IGenericRepository<ScopeEntity> genericReposito
         return matching;
     }
 
-    public async Task<IEnumerable<ScopeEntity>> GetByNameContainsAsync(string term, int page, int pageSize, CancellationToken ct = default)
+    public async Task<IEnumerable<ScopeEntity>> GetByContainsAsync(string term, int page, int pageSize,
+        CancellationToken ct = default)
     {
-        var matching = await _genericRepository.GetMatchingAsync(s => s.NormalizedName.Contains(term.ToLower()), page, pageSize, ct);
+        var matching = await _genericRepository.GetMatchingAsync(s =>
+            s.NormalizedName.Contains(term.ToLower()) ||
+            s.Value.Contains(term.ToLower()) ||
+            s.Description.Contains(term.ToLower()), page, pageSize, ct);
         return matching;
     }
 
-    public async Task<IEnumerable<ScopeEntity>> GetByValueContainsAsync(string term, int page, int pageSize, CancellationToken ct = default)
-    {
-        var matching = await _genericRepository.GetMatchingAsync(s => s.Value.Contains(term.ToLower()), page, pageSize, ct);
-        return matching;
-    }
-
-    public async Task<ScopeEntity> UpdateAsync(ScopeEntity scope, Func<ScopeEntity, ScopeEntity> updateFunc, CancellationToken ct = default)
+    public async Task<ScopeEntity> UpdateAsync(ScopeEntity scope, CancellationToken ct = default)
     {
         return await _genericRepository.UpdateAsync(scope, ct);
     }

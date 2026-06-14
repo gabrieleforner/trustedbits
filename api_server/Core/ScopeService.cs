@@ -84,12 +84,67 @@ public class ScopeService : IScopeService
 
     public async Task<ScopeServiceResult<IEnumerable<ScopeDto>>> SearchScopes(string term, int page, int size)
     {
-        throw new NotImplementedException();
+        // Validate paging settings
+        var validationError =  ScopeHelpers<IEnumerable<ScopeDto>>.ValidatePagingSettings(page, size);
+        if (validationError != null)
+            return validationError;
+
+        // Retrieve from repository and return mapped DTOs
+        var matching = _repository.GetByContainsAsync(term, page, size);
+        var mappedScopes = _mapper.Map<IEnumerable<ScopeDto>>(matching);
+        
+        return new ScopeServiceResult<IEnumerable<ScopeDto>>(mappedScopes);
     }
 
-    public async Task<ScopeServiceResult<ScopeDto>> UpdateScope(Guid id, ScopeDto scope)
+    public async Task<ScopeServiceResult<ScopeDto>> UpdateScope(Guid id, ScopeDto scope) 
     {
-        throw new NotImplementedException();
+        // Validate the GUID of target scope
+        if (id == Guid.Empty)
+            return ScopeHelpers<ScopeDto>.InvalidScopeIdError();
+        
+        // Find the target scope, if not found return error
+        var updateTarget = await _repository.GetByIdAsync(id);
+        if (updateTarget == null)
+            return ScopeHelpers<ScopeDto>.NotFoundError(id);
+        
+        var modifyName  = string.IsNullOrWhiteSpace(scope.ScopeName) != true;
+        var modifyValue = string.IsNullOrWhiteSpace(scope.ScopeValue) != true;
+        var modifyDesc  = string.IsNullOrWhiteSpace(scope.ScopeDescription) != true;
+        var isModified = false;
+
+        if (modifyName)
+        {
+            // Check if new name conflicts with existing scopes
+            var conflicting = await _repository.GetByNameAsync(scope.ScopeName.ToLower());
+            if (conflicting != null && conflicting.Id != id)
+                return ScopeHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
+
+            updateTarget.DisplayName = scope.ScopeName;
+            updateTarget.NormalizedName = scope.ScopeName.ToLower();
+            isModified = true;
+        }
+        if (modifyValue)
+        {
+            // Check if new value conflicts with existing scopes
+            var conflicting = await _repository.GetByValueAsync(scope.ScopeValue.ToLower());
+            if (conflicting != null && conflicting.Id != id)
+                return ScopeHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
+
+            updateTarget.Value = scope.ScopeValue.ToLower();
+            isModified = true;
+        }
+        if (modifyDesc)
+        {
+            updateTarget.Description = scope.ScopeDescription;
+            isModified = true;
+        }
+
+        // Apply update only if at least one field has been modified
+        if (isModified)
+            await _repository.UpdateAsync(updateTarget);
+        
+        // Regardless of any update, return the DTO of the scope
+        return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(updateTarget));
     }
 
     public async Task<ScopeServiceResult<bool>> DeleteScope(Guid id)
