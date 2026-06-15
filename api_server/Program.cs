@@ -38,6 +38,7 @@ public class Program
         builder.Services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<ScopeMapProfile>();
+            cfg.AddProfile<RoleMapProfile>();
         });
     }
 
@@ -45,6 +46,7 @@ public class Program
     {
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericGenericRepositoryEfCoreImpl<>));
         builder.Services.AddScoped<IScopeRepository, ScopeRepositoryImpl>();
+        builder.Services.AddScoped<IRoleRepository, RoleRepositoryImpl>();
         builder.Services.AddScoped<IScopeService, ScopeService>();
     }
     
