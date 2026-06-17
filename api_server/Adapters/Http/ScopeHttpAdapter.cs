@@ -19,7 +19,7 @@ public class ScopeHttpAdapter : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] ScopeDto scope)
     {
-        var result = await _scopeService.CreateScope(scope);
+        var result = await _scopeService.Create(scope);
         if (result.IsFailed)
         {
             switch (result.ErrorType)
@@ -37,7 +37,7 @@ public class ScopeHttpAdapter : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var result = await _scopeService.GetScope(id);
+        var result = await _scopeService.Get(id);
         if (result.IsFailed)
         {
             switch (result.ErrorType)
@@ -54,7 +54,7 @@ public class ScopeHttpAdapter : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var result = await _scopeService.GetAllScopes(page, pageSize);
+        var result = await _scopeService.Get(page, pageSize);
         if (result.IsFailed)
         {
             return BadRequest(result.Error);
@@ -65,7 +65,7 @@ public class ScopeHttpAdapter : ControllerBase
     [HttpPatch("{id:guid}")]
     public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] ScopeDto scope)
     {
-        var result = await _scopeService.UpdateScope(id, scope);
+        var result = await _scopeService.Update(id, scope);
         if (result.IsFailed)
         {
             switch (result.ErrorType)
@@ -84,7 +84,7 @@ public class ScopeHttpAdapter : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
     {
-        var result = await _scopeService.DeleteScope(id);
+        var result = await _scopeService.Delete(id);
         if (result.IsFailed)
         {
             switch (result.ErrorType)

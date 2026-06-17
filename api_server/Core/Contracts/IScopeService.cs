@@ -20,15 +20,15 @@ public class ScopeServiceResult<T> : GenericResult<T>
 public interface IScopeService
 {
     // Create use case
-    Task<ScopeServiceResult<ScopeDto>> CreateScope(ScopeDto scope);
+    Task<ScopeServiceResult<ScopeDto>> Create(ScopeDto scope);
     
     // Read use cases
-    Task<ScopeServiceResult<ScopeDto>> GetScope(Guid id);
-    Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> GetAllScopes(int page, int pageSize);
-    Task<ScopeServiceResult<IEnumerable<ScopeDto>>> SearchScopes(string term, int page, int size);
+    Task<ScopeServiceResult<ScopeDto>> Get(Guid id);
+    Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> Get(int page, int pageSize);
+    Task<ScopeServiceResult<IEnumerable<ScopeDto>>> Search(string term, int page, int size);
     
     // Update use case
-    Task<ScopeServiceResult<ScopeDto>> UpdateScope(Guid id, ScopeDto scope);
+    Task<ScopeServiceResult<ScopeDto>> Update(Guid id, ScopeDto scope);
     // Delete use case
-    Task<ScopeServiceResult<bool>> DeleteScope(Guid id);
+    Task<ScopeServiceResult<bool>> Delete(Guid id);
 }
