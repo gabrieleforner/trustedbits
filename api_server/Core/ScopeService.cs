@@ -38,7 +38,7 @@ public class ScopeService : IScopeService
     }
  
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<ScopeDto>> Create(ScopeDto scope)
+    public async Task<Result<ScopeDto>> Create(ScopeDto scope)
     {
         // Validate schema contents
         if (string.IsNullOrWhiteSpace(scope.ScopeName))
@@ -63,11 +63,11 @@ public class ScopeService : IScopeService
         _logger.LogInformation("Scope created successfully (ID={id})", result.Id);
         
         // Return written scope in DTO format
-        return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
+        return new Result<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
     
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<ScopeDto>> Get(Guid id)
+    public async Task<Result<ScopeDto>> Get(Guid id)
     {
         // Check if a DTO has been provided
         if(id == Guid.Empty)
@@ -77,11 +77,11 @@ public class ScopeService : IScopeService
         var result = await _repository.GetByIdAsync(id);
         if(result == null)
             return ScopeHelpers<ScopeDto>.NotFoundError(id);
-        return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
+        return new Result<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> Get(int page, int pageSize)
+    public async Task<Result<IAsyncEnumerable<ScopeDto>>> Get(int page, int pageSize)
     {
         // Validate paging settings
         var validationError = ScopeHelpers<IAsyncEnumerable<ScopeDto>>.ValidatePagingSettings(page, pageSize);
@@ -95,11 +95,11 @@ public class ScopeService : IScopeService
             .ToAsyncEnumerable();
 
         // Return DTOs
-        return new ScopeServiceResult<IAsyncEnumerable<ScopeDto>>(mappedScopes);
+        return new Result<IAsyncEnumerable<ScopeDto>>(mappedScopes);
     }
 
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<IEnumerable<ScopeDto>>> Search(string term, int page, int size)
+    public async Task<Result<IEnumerable<ScopeDto>>> Search(string term, int page, int size)
     {
         // Validate paging settings
         var validationError =  ScopeHelpers<IEnumerable<ScopeDto>>.ValidatePagingSettings(page, size);
@@ -110,11 +110,11 @@ public class ScopeService : IScopeService
         var matching = await _repository.GetByContainsAsync(term, page, size);
         var mappedScopes = _mapper.Map<IEnumerable<ScopeDto>>(matching);
         
-        return new ScopeServiceResult<IEnumerable<ScopeDto>>(mappedScopes);
+        return new Result<IEnumerable<ScopeDto>>(mappedScopes);
     }
     
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<ScopeDto>> Update(Guid id, ScopeDto scope) 
+    public async Task<Result<ScopeDto>> Update(Guid id, ScopeDto scope) 
     {
         // Validate the GUID of target scope
         if (id == Guid.Empty)
@@ -165,11 +165,11 @@ public class ScopeService : IScopeService
             await _repository.UpdateAsync(updateTarget);
         
         // Regardless of any update, return the DTO of the scope
-        return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(updateTarget));
+        return new Result<ScopeDto>(_mapper.Map<ScopeDto>(updateTarget));
     }
     
     /// <inheritdoc/>
-    public async Task<ScopeServiceResult<bool>> Delete(Guid id)
+    public async Task<Result<bool>> Delete(Guid id)
     {
         // Validate the GUID of target scope
         if (id == Guid.Empty)
@@ -185,6 +185,6 @@ public class ScopeService : IScopeService
         _logger.LogInformation("Scope deleted successfully (ID={id})", id);
         
         // Return success
-        return new ScopeServiceResult<bool>(true);
+        return new Result<bool>(true);
     }
 }

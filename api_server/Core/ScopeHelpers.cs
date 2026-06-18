@@ -16,14 +16,14 @@ public static class ScopeHelpers<T>
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static ScopeServiceResult<T> NotFoundError(Guid id)
+    public static Result<T> NotFoundError(Guid id)
     {
         var errorDict = new Dictionary<string, object>
         {
             { "ScopeId", id }
         };
         var errorDto = new ErrorDto("Scope not found", errorDict);
-        return new ScopeServiceResult<T>(errorDto, ErrorType.NotFound);
+        return new Result<T>(errorDto, ErrorType.NotFound);
     }
     
     /// <summary>
@@ -31,8 +31,8 @@ public static class ScopeHelpers<T>
     /// </summary>
     /// <param name="conflictAttrib">Name of the attribute who is originating the conflict.</param>
     /// <param name="conflictValue">the actual conflicting value.</param>
-    /// <returns>ScopeServiceResult with ErrorType set as conflict.</returns>
-    public static ScopeServiceResult<T> ConflictError(string conflictAttrib, string conflictValue)
+    /// <returns>Result with ErrorType set as conflict.</returns>
+    public static Result<T> ConflictError(string conflictAttrib, string conflictValue)
     {
         var conflictDict = new Dictionary<string, string>
         {
@@ -41,14 +41,14 @@ public static class ScopeHelpers<T>
         };
         
         var errorDto = new ErrorDto("Conflicting value found", conflictDict);
-        return new ScopeServiceResult<T>(errorDto, ErrorType.Conflict);
+        return new Result<T>(errorDto, ErrorType.Conflict);
     }
     
     /// <summary>
     /// Helper to return a invalid ID error (Specialization of <see cref="BadRequest"/>).
     /// </summary>
-    /// <returns>ScopeServiceResult with ErrorType set as BadRequest.</returns>
-    public static ScopeServiceResult<T> InvalidScopeIdError()
+    /// <returns>Result with ErrorType set as BadRequest.</returns>
+    public static Result<T> InvalidScopeIdError()
     {
         return BadRequest("Scope ID is not valid");
     }
@@ -59,7 +59,7 @@ public static class ScopeHelpers<T>
     /// <param name="page">Page number</param>
     /// <param name="pageSize">Number of elements per page</param>
     /// <returns>null, or error with ErrorType as BadRequest</returns>
-    public static ScopeServiceResult<T>? ValidatePagingSettings(int page, int pageSize)
+    public static Result<T>? ValidatePagingSettings(int page, int pageSize)
     {
         if (page < 1)
             return BadRequest("Invalid page number");
@@ -74,9 +74,9 @@ public static class ScopeHelpers<T>
     /// <param name="error">String containing the error message.</param>
     /// <param name="detail">Generic object containing details.</param>
     /// <returns></returns>
-    public static ScopeServiceResult<T> BadRequest(string error, object? detail= null)
+    public static Result<T> BadRequest(string error, object? detail= null)
     {
         var errorDto = new ErrorDto(error, detail);
-        return new ScopeServiceResult<T>(errorDto, ErrorType.BadRequest);
+        return new Result<T>(errorDto, ErrorType.BadRequest);
     }
 }
