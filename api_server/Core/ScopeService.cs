@@ -107,7 +107,7 @@ public class ScopeService : IScopeService
             return validationError;
 
         // Retrieve from repository and return mapped DTOs
-        var matching = _repository.GetByContainsAsync(term, page, size);
+        var matching = await _repository.GetByContainsAsync(term, page, size);
         var mappedScopes = _mapper.Map<IEnumerable<ScopeDto>>(matching);
         
         return new ScopeServiceResult<IEnumerable<ScopeDto>>(mappedScopes);
