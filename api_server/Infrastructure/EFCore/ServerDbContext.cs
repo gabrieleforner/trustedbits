@@ -13,6 +13,11 @@ public class ServerDbContext : DbContext
     /// DB set containing <see cref="ScopeEntity"/> records.
     /// </summary>
     public DbSet<ScopeEntity> Scopes { get; set; }
+    
+    /// <summary>
+    /// DB set containing <see cref="RoleEntity"/>
+    /// </summary>
+    public DbSet<RoleEntity> Roles { get; set; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="ServerDbContext"/>.
