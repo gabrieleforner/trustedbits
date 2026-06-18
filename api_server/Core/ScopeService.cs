@@ -7,12 +7,29 @@ using Trustedbits.ApiServer.Domain.Repository;
 
 namespace Trustedbits.ApiServer.Core;
 
+/// <inheritdoc/>
 public class ScopeService : IScopeService
 {
+    /// <summary>
+    /// Object mapper instance
+    /// </summary>
     private readonly IMapper _mapper;
+    /// <summary>
+    /// Scope-specialized repository instance
+    /// </summary>
     private readonly IScopeRepository _repository;
+
+    /// <summary>
+    /// Logger (required for auit log events on this resource types)
+    /// </summary>
     private readonly ILogger<ScopeService> _logger;
 
+    /// <summary>
+    /// Constructor of the service layer. Where dependencies are injected
+    /// </summary>
+    /// <param name="mapper">Object mapper instance</param>
+    /// <param name="repository">Scope repository instance</param>
+    /// <param name="logger">Logger instance</param>
     public ScopeService(IMapper mapper, IScopeRepository repository, ILogger<ScopeService> logger)
     {
         _mapper = mapper;
@@ -20,19 +37,15 @@ public class ScopeService : IScopeService
         _logger = logger;
     }
  
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<ScopeDto>> Create(ScopeDto scope)
     {
         // Validate schema contents
         if (string.IsNullOrWhiteSpace(scope.ScopeName))
-        {
-            var errorDto = new ErrorDto("Scope name is required");
-            return new ScopeServiceResult<ScopeDto>(errorDto, ErrorType.BadRequest);
-        }
+            return ScopeHelpers<ScopeDto>.BadRequest("Scope name is required");
+        
         if (string.IsNullOrWhiteSpace(scope.ScopeValue))
-        {
-            var errorDto = new ErrorDto("Scope value is required");
-            return new ScopeServiceResult<ScopeDto>(errorDto, ErrorType.BadRequest);
-        }
+            return ScopeHelpers<ScopeDto>.BadRequest("Scope value is required");
         
         // Check for conflicting unique values (name/value)
         var nameConflicting = await _repository.GetByNameAsync(scope.ScopeName);
@@ -52,7 +65,8 @@ public class ScopeService : IScopeService
         // Return written scope in DTO format
         return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
-
+    
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<ScopeDto>> Get(Guid id)
     {
         // Check if a DTO has been provided
@@ -66,6 +80,7 @@ public class ScopeService : IScopeService
         return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<IAsyncEnumerable<ScopeDto>>> Get(int page, int pageSize)
     {
         // Validate paging settings
@@ -83,6 +98,7 @@ public class ScopeService : IScopeService
         return new ScopeServiceResult<IAsyncEnumerable<ScopeDto>>(mappedScopes);
     }
 
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<IEnumerable<ScopeDto>>> Search(string term, int page, int size)
     {
         // Validate paging settings
@@ -96,7 +112,8 @@ public class ScopeService : IScopeService
         
         return new ScopeServiceResult<IEnumerable<ScopeDto>>(mappedScopes);
     }
-
+    
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<ScopeDto>> Update(Guid id, ScopeDto scope) 
     {
         // Validate the GUID of target scope
@@ -150,7 +167,8 @@ public class ScopeService : IScopeService
         // Regardless of any update, return the DTO of the scope
         return new ScopeServiceResult<ScopeDto>(_mapper.Map<ScopeDto>(updateTarget));
     }
-
+    
+    /// <inheritdoc/>
     public async Task<ScopeServiceResult<bool>> Delete(Guid id)
     {
         // Validate the GUID of target scope

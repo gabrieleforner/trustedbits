@@ -4,8 +4,14 @@ using Trustedbits.ApiServer.Domain.Entity;
 
 namespace Trustedbits.ApiServer.Infrastructure.AutoMapperProfiles;
 
+/// <summary>
+/// AutoMapper profile that defines mappings between <see cref="RoleEntity"/> and <see cref="RoleDto"/>.
+/// </summary>
 public class RoleMapProfile : Profile
 {
+    /// <summary>
+    /// Initializes mapping configuration for role domain/service DTO conversions.
+    /// </summary>
     public RoleMapProfile()
     {
         // Domain -> Service

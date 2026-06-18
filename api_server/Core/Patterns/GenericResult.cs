@@ -10,19 +10,36 @@ namespace Trustedbits.ApiServer.Core.Patterns;
 /// <typeparam name="T">Type to return on success</typeparam>
 public class GenericResult<T>
 {
+    /// <summary>
+    /// Data to return in case of success.
+    /// </summary>
     public T? Data { get; }
+    /// <summary>
+    /// Flag that indicates whether it's failed.
+    /// </summary>
     public bool IsFailed { get; }
+    /// <summary>
+    /// Error DTO.
+    /// </summary>
     public ErrorDto? Error { get; }
+    /// <summary>
+    /// Generic error description.
+    /// </summary>
     public ErrorType ErrorType { get; }
 
-    // On-success constructor
+    /// <summary>
+    /// On-success constructor.
+    /// </summary>
+    /// <param name="data">Data to return</param>
     public GenericResult(T? data)
     {
         Data = data;
         IsFailed = false;
     }
 
-    // On-failure constructor
+    /// <summary>
+    /// On-failure constructor.
+    /// </summary> 
     public GenericResult(ErrorDto? error, ErrorType errorType)
     {
         Error = error;

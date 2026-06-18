@@ -7,6 +7,12 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <AssemblyName>trustedbits.ApiServer</AssemblyName>
         <RootNamespace>Trustedbits.ApiServer</RootNamespace>
+        <!-- Enable generation of XML documentation file during build -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\net10.0\trustedbits_api_server_docs.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
