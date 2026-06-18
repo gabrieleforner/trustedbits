@@ -1,15 +1,12 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using Trustedbits.ApiServer.Core.Contracts;
 using Trustedbits.ApiServer.Core.Dto;
-using Trustedbits.ApiServer.Core.Patterns;
 
-namespace Trustedbits.ApiServer.Core;
+namespace Trustedbits.ApiServer.Core.Patterns;
 
 /// <summary>
 /// Helper functions specializations for scope service.
 /// </summary>
 /// <typeparam name="T">Data type to return.</typeparam>
-public static class ScopeHelpers<T>
+public static class ResultHelpers<T>
 {
     /// <summary>
     /// Helper for returning a NotFoundError
@@ -20,9 +17,9 @@ public static class ScopeHelpers<T>
     {
         var errorDict = new Dictionary<string, object>
         {
-            { "ScopeId", id }
+            { "ProvidedId", id }
         };
-        var errorDto = new ErrorDto("Scope not found", errorDict);
+        var errorDto = new ErrorDto("Resource not found", errorDict);
         return new Result<T>(errorDto, ErrorType.NotFound);
     }
     
@@ -48,9 +45,9 @@ public static class ScopeHelpers<T>
     /// Helper to return a invalid ID error (Specialization of <see cref="BadRequest"/>).
     /// </summary>
     /// <returns>Result with ErrorType set as BadRequest.</returns>
-    public static Result<T> InvalidScopeIdError()
+    public static Result<T> InvalidIdError()
     {
-        return BadRequest("Scope ID is not valid");
+        return BadRequest("Provided ID is not valid");
     }
 
     /// <summary>

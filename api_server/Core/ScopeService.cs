@@ -42,19 +42,19 @@ public class ScopeService : IScopeService
     {
         // Validate schema contents
         if (string.IsNullOrWhiteSpace(scope.ScopeName))
-            return ScopeHelpers<ScopeDto>.BadRequest("Scope name is required");
+            return ResultHelpers<ScopeDto>.BadRequest("Scope name is required");
         
         if (string.IsNullOrWhiteSpace(scope.ScopeValue))
-            return ScopeHelpers<ScopeDto>.BadRequest("Scope value is required");
+            return ResultHelpers<ScopeDto>.BadRequest("Scope value is required");
         
         // Check for conflicting unique values (name/value)
         var nameConflicting = await _repository.GetByNameAsync(scope.ScopeName);
         if (nameConflicting != null)
-            return ScopeHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
+            return ResultHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
         
         var valueConflicting = await _repository.GetByValueAsync(scope.ScopeValue);
         if (valueConflicting != null)
-            return ScopeHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
+            return ResultHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
 
         // Write new scope to the DB and log
         var mappedScope = _mapper.Map<ScopeEntity>(scope);
@@ -71,12 +71,12 @@ public class ScopeService : IScopeService
     {
         // Check if a DTO has been provided
         if(id == Guid.Empty)
-            return ScopeHelpers<ScopeDto>.InvalidScopeIdError();
+            return ResultHelpers<ScopeDto>.InvalidIdError();
         
         // Look up the repository, if null return not found error, else return mapped DTO
         var result = await _repository.GetByIdAsync(id);
         if(result == null)
-            return ScopeHelpers<ScopeDto>.NotFoundError(id);
+            return ResultHelpers<ScopeDto>.NotFoundError(id);
         return new Result<ScopeDto>(_mapper.Map<ScopeDto>(result));
     }
 
@@ -84,7 +84,7 @@ public class ScopeService : IScopeService
     public async Task<Result<IAsyncEnumerable<ScopeDto>>> Get(int page, int pageSize)
     {
         // Validate paging settings
-        var validationError = ScopeHelpers<IAsyncEnumerable<ScopeDto>>.ValidatePagingSettings(page, pageSize);
+        var validationError = ResultHelpers<IAsyncEnumerable<ScopeDto>>.ValidatePagingSettings(page, pageSize);
         if (validationError != null)
             return validationError;
 
@@ -102,7 +102,7 @@ public class ScopeService : IScopeService
     public async Task<Result<IEnumerable<ScopeDto>>> Search(string term, int page, int size)
     {
         // Validate paging settings
-        var validationError =  ScopeHelpers<IEnumerable<ScopeDto>>.ValidatePagingSettings(page, size);
+        var validationError =  ResultHelpers<IEnumerable<ScopeDto>>.ValidatePagingSettings(page, size);
         if (validationError != null)
             return validationError;
 
@@ -118,12 +118,12 @@ public class ScopeService : IScopeService
     {
         // Validate the GUID of target scope
         if (id == Guid.Empty)
-            return ScopeHelpers<ScopeDto>.InvalidScopeIdError();
+            return ResultHelpers<ScopeDto>.InvalidIdError();
         
         // Find the target scope, if not found return error
         var updateTarget = await _repository.GetByIdAsync(id);
         if (updateTarget == null)
-            return ScopeHelpers<ScopeDto>.NotFoundError(id);
+            return ResultHelpers<ScopeDto>.NotFoundError(id);
         
         var modifyName  = string.IsNullOrWhiteSpace(scope.ScopeName) != true;
         var modifyValue = string.IsNullOrWhiteSpace(scope.ScopeValue) != true;
@@ -135,7 +135,7 @@ public class ScopeService : IScopeService
             // Check if new name conflicts with existing scopes
             var conflicting = await _repository.GetByNameAsync(scope.ScopeName.ToLower());
             if (conflicting != null && conflicting.Id != id)
-                return ScopeHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
+                return ResultHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
 
             updateTarget.DisplayName = scope.ScopeName;
             updateTarget.NormalizedName = scope.ScopeName.ToLower();
@@ -147,7 +147,7 @@ public class ScopeService : IScopeService
             // Check if new value conflicts with existing scopes
             var conflicting = await _repository.GetByValueAsync(scope.ScopeValue.ToLower());
             if (conflicting != null && conflicting.Id != id)
-                return ScopeHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
+                return ResultHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
 
             updateTarget.Value = scope.ScopeValue.ToLower();
             isModified = true;
@@ -173,12 +173,12 @@ public class ScopeService : IScopeService
     {
         // Validate the GUID of target scope
         if (id == Guid.Empty)
-            return ScopeHelpers<bool>.InvalidScopeIdError();
+            return ResultHelpers<bool>.InvalidIdError();
         
         // Find the target scope, if not found return error
         var deleteTarget = await _repository.GetByIdAsync(id);
         if (deleteTarget == null)
-            return ScopeHelpers<bool>.NotFoundError(id);
+            return ResultHelpers<bool>.NotFoundError(id);
         
         // Delete the scope and log
         await _repository.DeleteAsync(deleteTarget);
