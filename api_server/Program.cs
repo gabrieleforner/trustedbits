@@ -66,6 +66,7 @@ public class Program
         builder.Services.AddScoped<IScopeRepository, ScopeRepositoryImpl>();
         builder.Services.AddScoped<IRoleRepository, RoleRepositoryImpl>();
         builder.Services.AddScoped<IScopeService, ScopeService>();
+        builder.Services.AddScoped<IRoleService, RoleService>();
     }
     
     /// <summary>
