@@ -42,7 +42,7 @@ public static class ResultHelpers<T>
     }
     
     /// <summary>
-    /// Helper to return a invalid ID error (Specialization of <see cref="BadRequest"/>).
+    /// Helper to return an invalid ID error (Specialization of <see cref="BadRequest"/>).
     /// </summary>
     /// <returns>Result with ErrorType set as BadRequest.</returns>
     public static Result<T> InvalidIdError()

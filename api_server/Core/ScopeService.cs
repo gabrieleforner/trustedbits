@@ -133,7 +133,7 @@ public class ScopeService : IScopeService
         if (modifyName)
         {
             // Check if new name conflicts with existing scopes
-            var conflicting = await _repository.GetByNameAsync(scope.ScopeName.ToLower());
+            var conflicting = await _repository.GetByNameAsync(scope.ScopeName!.ToLower());
             if (conflicting != null && conflicting.Id != id)
                 return ResultHelpers<ScopeDto>.ConflictError("ScopeName", scope.ScopeName);
 
@@ -145,7 +145,7 @@ public class ScopeService : IScopeService
         if (modifyValue)
         {
             // Check if new value conflicts with existing scopes
-            var conflicting = await _repository.GetByValueAsync(scope.ScopeValue.ToLower());
+            var conflicting = await _repository.GetByValueAsync(scope.ScopeValue!.ToLower());
             if (conflicting != null && conflicting.Id != id)
                 return ResultHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
 
@@ -155,7 +155,7 @@ public class ScopeService : IScopeService
         }
         if (modifyDesc)
         {
-            updateTarget.Description = scope.ScopeDescription;
+            updateTarget.Description = scope.ScopeDescription!;
             isModified = true;
             _logger.LogInformation("Scope DESCRIPTION updated successfully (TARGET_ID={id})", id);
         }
