@@ -1,6 +1,6 @@
 using Trustedbits.ApiServer.Domain.Entity;
 
-namespace Trustedbits.ApiServer.Domain.Repository;
+namespace Trustedbits.ApiServer.Domain.Repository.impl;
 
 /// <summary>
 /// Concrete implementation of <see cref="IRoleRepository"/> that delegates

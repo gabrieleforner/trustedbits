@@ -1,6 +1,6 @@
 using Trustedbits.ApiServer.Domain.Entity;
 
-namespace Trustedbits.ApiServer.Domain.Repository;
+namespace Trustedbits.ApiServer.Domain.Repository.impl;
 
 /// <summary>
 /// Implementation of <see cref="IScopeRepository"/> that delegates storage operations

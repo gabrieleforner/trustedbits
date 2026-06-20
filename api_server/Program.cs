@@ -3,6 +3,7 @@ using Trustedbits.ApiServer.Adapters.Http;
 using Trustedbits.ApiServer.Core;
 using Trustedbits.ApiServer.Core.Contracts;
 using Trustedbits.ApiServer.Domain.Repository;
+using Trustedbits.ApiServer.Domain.Repository.impl;
 using Trustedbits.ApiServer.Infrastructure.AutoMapperProfiles;
 using Trustedbits.ApiServer.Infrastructure.EFCore;
 
