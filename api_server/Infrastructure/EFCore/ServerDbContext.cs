@@ -37,14 +37,13 @@ public class ServerDbContext : DbContext
     }
 
     /// <summary>
-    /// Configures entity mappings, indexes and property constraints for ScopeEntity and RoleEntity.
+    /// Configures entity mappings, indexes and property constraints for ScopeEntity.
     /// This method is intentionally static to emphasize it does not depend on instance state.
     /// </summary>
     /// <param name="modelBuilder">Model builder used to configure the EF model.</param>
     static void SetupScopeEntity(ModelBuilder modelBuilder)
     {
         // Configure indexes
-        // Scope Entity
         modelBuilder.Entity<ScopeEntity>()
             .HasIndex(s => s.Id)
             .IsUnique();
@@ -55,16 +54,9 @@ public class ServerDbContext : DbContext
             .HasIndex(s => s.Value)
             .IsUnique();
 
-        // Role Entity
-        modelBuilder.Entity<RoleEntity>()
-            .HasIndex(s => s.Id)
-            .IsUnique();
-        modelBuilder.Entity<RoleEntity>()
-            .HasIndex(s => s.NormalizedName)
-            .IsUnique();
+        
         
         // Configure properties (max length)
-        // Scope Entity
         modelBuilder.Entity<ScopeEntity>()
             .Property(s => s.NormalizedName)
             .HasMaxLength(50)
@@ -81,7 +73,25 @@ public class ServerDbContext : DbContext
             .Property(s => s.Description)
             .HasMaxLength(255);
         
-        // Role Entity
+
+    }
+
+    /// <summary>
+    /// Configures entity mappings, indexes and property constraints for RoleEntity.
+    /// This method is intentionally static to emphasize it does not depend on instance state.
+    /// </summary>
+    /// <param name="modelBuilder">Model builder used to configure the EF model.</param>
+    public void SetupRoleEntity(ModelBuilder modelBuilder)
+    {
+        // Configure indexes
+        modelBuilder.Entity<RoleEntity>()
+            .HasIndex(s => s.Id)
+            .IsUnique();
+        modelBuilder.Entity<RoleEntity>()
+            .HasIndex(s => s.NormalizedName)
+            .IsUnique();
+        
+        // Configure properties
         modelBuilder.Entity<RoleEntity>()
             .Property(r => r.NormalizedName)
             .HasMaxLength(50)
