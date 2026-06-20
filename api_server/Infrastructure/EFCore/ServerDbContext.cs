@@ -34,6 +34,21 @@ public class ServerDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         SetupScopeEntity(modelBuilder);
+        SetupRoleEntity(modelBuilder);
+        
+        SetupRBACRelationships(modelBuilder);
+    }
+
+    /// <summary>
+    /// Configures RBAC entity relationships. This method is intentionally static to
+    /// emphasize it does not depend on instance state.
+    /// </summary>
+    /// <param name="modelBuilder"></param>
+    private static void SetupRBACRelationships(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RoleEntity>()
+            .HasMany(r => r.ScopeEntities)
+            .WithMany(r => r.RoleEntities);
     }
 
     /// <summary>

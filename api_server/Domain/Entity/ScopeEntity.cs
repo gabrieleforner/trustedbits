@@ -27,4 +27,9 @@ public class ScopeEntity
     /// Description of the scope.
     /// </summary>
     public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Navigation property to all roles owning a scope
+    /// </summary>
+    public ICollection<RoleEntity> RoleEntities = new List<RoleEntity>();
 }

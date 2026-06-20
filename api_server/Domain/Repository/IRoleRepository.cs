@@ -68,4 +68,11 @@ public interface IRoleRepository
     /// <param name="scope">The role entity to delete.</param>
     /// <param name="ct">A cancellation token.</param>
     Task DeleteAsync(RoleEntity scope, CancellationToken ct = default);
+    
+    /// <summary>
+    /// Save pending changes made to a Role.
+    /// </summary>
+    /// <param name="ct">A cancellation token</param>
+    /// <returns>A task representing the asynchronous save operation.</returns>
+    Task SaveChanges(CancellationToken ct = default);
 }

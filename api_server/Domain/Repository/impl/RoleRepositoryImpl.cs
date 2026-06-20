@@ -69,4 +69,10 @@ public class RoleRepositoryImpl : IRoleRepository
     {
         await _genericRepository.DeleteAsync(scope, ct);
     }
+    
+    /// <inheritdoc/>
+    public async Task SaveChanges(CancellationToken ct = default)
+    {
+        await _genericRepository.SaveChanges(ct);
+    }
 }

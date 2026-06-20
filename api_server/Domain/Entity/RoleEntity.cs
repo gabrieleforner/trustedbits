@@ -22,4 +22,9 @@ public class RoleEntity
     /// Description of the role
     /// </summary>
     public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// NavigationProperty to the scopes associated with the scope.
+    /// </summary>
+    public ICollection<ScopeEntity> ScopeEntities = new List<ScopeEntity>();
 }
