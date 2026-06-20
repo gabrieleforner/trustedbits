@@ -160,4 +160,25 @@ public class RoleHttpAdapter : ControllerBase
         }
         return Ok();
     }
+
+    /// <summary>
+    /// HTTP adapter for expose IRoleService.Assign(roleId, scopeId) use case.
+    /// </summary>
+    /// <param name="roleId"></param>
+    /// <param name="scopeId"></param>
+    /// <returns></returns>
+    [HttpPost("{roleId:guid}/scopes")]
+    public async Task<IActionResult> AssignScope([FromRoute] Guid roleId, [FromQuery] Guid scopeId)
+    {
+        var result = await _service.AssignScope(roleId, scopeId);
+        if (result.IsFailed)
+        {
+            switch (result.ErrorType)
+            {
+                case ErrorType.NotFound:
+                    return NotFound(result.Error);
+            }
+        }
+        return Ok();
+    }
 }

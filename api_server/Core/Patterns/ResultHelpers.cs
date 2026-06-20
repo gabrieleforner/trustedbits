@@ -12,14 +12,15 @@ public static class ResultHelpers<T>
     /// Helper for returning a NotFoundError
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="msg"></param>
     /// <returns></returns>
-    public static Result<T> NotFoundError(Guid id)
+    public static Result<T> NotFoundError(Guid id, string msg="Resource not found")
     {
         var errorDict = new Dictionary<string, object>
         {
             { "ProvidedId", id }
         };
-        var errorDto = new ErrorDto("Resource not found", errorDict);
+        var errorDto = new ErrorDto(msg, errorDict);
         return new Result<T>(errorDto, ErrorType.NotFound);
     }
     

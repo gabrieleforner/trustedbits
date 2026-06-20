@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Domain.Entity;
+using Trustedbits.ApiServer.Infrastructure.EFCore;
 
 namespace Trustedbits.ApiServer.Domain.Repository.impl;
 
@@ -30,7 +32,7 @@ public class RoleRepositoryImpl : IRoleRepository
     /// <inheritdoc />
     public async Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
     {
-        var result = await _genericRepository.GetFirstOrDefaultAsync( x => x.Id == id, isTracked, ct);
+        var result = await _genericRepository.GetFirstOrDefaultAsync(x => x.Id == id, isTracked, ct);
         return result;
     }
 
