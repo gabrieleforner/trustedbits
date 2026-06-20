@@ -22,7 +22,8 @@ public class RoleService : IRoleService
     /// Constructor for initialize service
     /// </summary>
     /// <param name="logger">Instance of logger (required for audit logging)</param>
-    /// <param name="repository">Instance of the <c>IRoleRepository</c></param>
+    /// <param name="roleRepository">Instance of the <c>IRoleRepository</c></param>
+    /// <param name="scopeRepository">Instance of the <c>IScopeRepository</c></param>
     /// <param name="mapper">Object mapper instance</param>
     public RoleService(ILogger<RoleService> logger, IRoleRepository roleRepository, IScopeRepository scopeRepository, IMapper mapper)
     {

@@ -20,6 +20,11 @@ public class ServerDbContext : DbContext
     public DbSet<RoleEntity> Roles { get; set; }
 
     /// <summary>
+    /// DB set containing <see cref="UserEntity"/>
+    /// </summary>
+    public DbSet<UserEntity> Users { get; set; }
+
+    /// <summary>
     /// Creates a new instance of the <see cref="ServerDbContext"/>.
     /// </summary>
     /// <param name="options">The options used to configure the context.</param>
@@ -35,6 +40,7 @@ public class ServerDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         SetupScopeEntity(modelBuilder);
         SetupRoleEntity(modelBuilder);
+        SetupUserEntity(modelBuilder);
         
         SetupRBACRelationships(modelBuilder);
     }
@@ -118,5 +124,43 @@ public class ServerDbContext : DbContext
         modelBuilder.Entity<RoleEntity>()
             .Property(r => r.Description)
             .HasMaxLength(255);
+    }
+    
+    /// <summary>
+    /// Configures entity mappings, indexes and property constraints for RoleEntity.
+    /// This method is intentionally static to emphasize it does not depend on instance state.
+    /// </summary>
+    /// <param name="modelBuilder">Model builder used to configure the EF model.</param>
+    public void SetupUserEntity(ModelBuilder modelBuilder)
+    {
+        // Configure indexes
+        modelBuilder.Entity<UserEntity>()
+            .HasIndex(s => s.Id)
+            .IsUnique();
+        modelBuilder.Entity<UserEntity>()
+            .HasIndex(s => s.NormalizedEmail)
+            .IsUnique();
+        modelBuilder.Entity<UserEntity>()
+            .HasIndex(s => s.NormalizedUsername)
+            .IsUnique();
+        
+        // Configure properties
+        modelBuilder.Entity<UserEntity>()
+            .Property(r => r.NormalizedUsername)
+            .HasMaxLength(50)
+            .IsRequired();
+        modelBuilder.Entity<UserEntity>()
+            .Property(r => r.DisplayUsername)
+            .HasMaxLength(50)
+            .IsRequired();
+        
+        modelBuilder.Entity<UserEntity>()
+            .Property(r => r.DisplayEmail)
+            .HasMaxLength(50)
+            .IsRequired();
+        modelBuilder.Entity<UserEntity>()
+            .Property(r => r.NormalizedEmail)
+            .HasMaxLength(50)
+            .IsRequired();
     }
 }
