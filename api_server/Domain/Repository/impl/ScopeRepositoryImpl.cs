@@ -18,9 +18,9 @@ public class ScopeRepositoryImpl(IGenericRepository<ScopeEntity> genericReposito
     }
 
     /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<ScopeEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
     {
-        return await _genericRepository.GetFirstOrDefaultAsync(s => s.Id == id, ct);
+        return await _genericRepository.GetFirstOrDefaultAsync(s => s.Id == id, isTracked, ct);
     }
 
     /// <inheritdoc />
@@ -31,16 +31,16 @@ public class ScopeRepositoryImpl(IGenericRepository<ScopeEntity> genericReposito
     }
 
     /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByNameAsync(string name, CancellationToken ct = default)
+    public async Task<ScopeEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.NormalizedName == name.ToLower(), ct);
+        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.NormalizedName == name.ToLower(), isTracked, ct);
         return matching;
     }
 
     /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByValueAsync(string value, CancellationToken ct = default)
+    public async Task<ScopeEntity?> GetByValueAsync(string value, bool isTracked=false, CancellationToken ct = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.Value == value.ToLower(), ct);
+        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.Value == value.ToLower(), isTracked, ct);
         return matching;
     }
 

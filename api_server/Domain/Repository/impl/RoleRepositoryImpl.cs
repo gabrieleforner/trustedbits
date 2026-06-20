@@ -28,9 +28,9 @@ public class RoleRepositoryImpl : IRoleRepository
     }
 
     /// <inheritdoc />
-    public async Task<RoleEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
     {
-        var result = await _genericRepository.GetFirstOrDefaultAsync( x => x.Id == id, ct);
+        var result = await _genericRepository.GetFirstOrDefaultAsync( x => x.Id == id, isTracked, ct);
         return result;
     }
 
@@ -42,9 +42,9 @@ public class RoleRepositoryImpl : IRoleRepository
     }
 
     /// <inheritdoc />
-    public async Task<RoleEntity?> GetByNameAsync(string name, CancellationToken ct = default)
+    public async Task<RoleEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(x => x.NormalizedName == name.ToLower(), ct);
+        var matching = await _genericRepository.GetFirstOrDefaultAsync(x => x.NormalizedName == name.ToLower(), isTracked, ct);
         return matching;
     }
     

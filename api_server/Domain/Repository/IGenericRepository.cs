@@ -20,12 +20,13 @@ public interface IGenericRepository<T> where T : class
     // Non-tracking
     /// <summary>
     /// Returns the first entity matching <paramref name="predicate"/> or <c>null</c> if none found.
-    /// This method is intended to return an untracked entity (no change-tracking attached).
+    /// This method can both return a tracked or untracked entity.
     /// </summary>
     /// <param name="predicate">Filter expression used to match an entity.</param>
+    /// <param name="isTracked">Flags whether to enable the entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The first matching entity or <c>null</c>.</returns>
-    Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default);
+    Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated list of all entities.
@@ -60,4 +61,12 @@ public interface IGenericRepository<T> where T : class
     /// <param name="entity">The entity to delete.</param>
     /// <param name="ct">A cancellation token.</param>
     Task DeleteAsync(T entity, CancellationToken ct = default);
+
+    /// <summary>
+    /// Persists all pending changes made to tracked entities to the underlying data store asynchronously.
+    /// This method must be called to commit any modifications from Create, Update, and Delete operations.
+    /// </summary>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>A task representing the asynchronous save operation.</returns>
+    Task SaveChanges(CancellationToken ct = default);
 }

@@ -20,9 +20,10 @@ public interface IScopeRepository
     /// Retrieves a scope by its identifier. Returned entity is expected to be untracked.
     /// </summary>
     /// <param name="id">The scope identifier.</param>
+    /// <param name="isTracked">Flags wheter to enable entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The matching <see cref="ScopeEntity"/>, or <c>null</c> if not found.</returns>
-    Task<ScopeEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<ScopeEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated set of all scopes.
@@ -37,17 +38,19 @@ public interface IScopeRepository
     /// Retrieves a scope by its (normalized) name.
     /// </summary>
     /// <param name="name">The scope name to search.</param>
+    /// <param name="isTracked">Flags whether to enable entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The matching <see cref="ScopeEntity"/>, or <c>null</c> if not found.</returns>
-    Task<ScopeEntity?> GetByNameAsync(string name, CancellationToken ct = default);
+    Task<ScopeEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a scope by its value.
     /// </summary>
     /// <param name="value">The scope value to search.</param>
+    /// <param name="isTracked">Flags whether to enable entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The matching <see cref="ScopeEntity"/>, or <c>null</c> if not found.</returns>
-    Task<ScopeEntity?> GetByValueAsync(string value, CancellationToken ct = default);
+    Task<ScopeEntity?> GetByValueAsync(string value, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Performs a contains/term search on scope properties returning a paginated set of matches.

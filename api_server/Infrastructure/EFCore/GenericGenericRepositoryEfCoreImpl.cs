@@ -46,13 +46,23 @@ public class GenericGenericRepositoryEfCoreImpl<T> : IGenericRepository<T> where
     /// The returned entity is not tracked by the context.
     /// </summary>
     /// <param name="predicate">Filter expression used to find the entity.</param>
+    /// <param name="isTracked">Flags whether to enable the entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The first matching entity or <c>null</c>.</returns>
-    public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+    public async Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, bool isTracked=false, CancellationToken ct = default)
     {
-        return await _dbSet
-            .AsNoTracking()
-            .FirstOrDefaultAsync(predicate, ct);
+        if (isTracked)
+        {
+            return await _dbSet
+                .AsTracking()
+                .FirstOrDefaultAsync(predicate, ct);
+        }
+        else
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .FirstOrDefaultAsync(predicate, ct);
+        }
     }
 
     /// <summary>
@@ -118,6 +128,17 @@ public class GenericGenericRepositoryEfCoreImpl<T> : IGenericRepository<T> where
     public async Task DeleteAsync(T entity, CancellationToken ct = default)
     {
         _dbSet.Remove(entity);
+        await _dbContext.SaveChangesAsync(ct);
+    }
+
+    /// <summary>
+    /// Persists all pending changes made to tracked entities to the underlying data store asynchronously.
+    /// This method must be called to commit any modifications from Create, Update, and Delete operations.
+    /// </summary>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>A task representing the asynchronous save operation.</returns>
+    public async Task SaveChanges(CancellationToken ct = default)
+    {
         await _dbContext.SaveChangesAsync(ct);
     }
 }

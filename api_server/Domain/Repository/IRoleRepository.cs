@@ -21,9 +21,10 @@ public interface IRoleRepository
     /// Retrieves a role by its identifier. Returned entity is expected to be untracked.
     /// </summary>
     /// <param name="id">The role identifier.</param>
+    /// <param name="isTracked">Flags whether to enable entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The matching <see cref="RoleEntity"/>, or <c>null</c> if not found.</returns>
-    Task<RoleEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated set of all roles.
@@ -38,9 +39,10 @@ public interface IRoleRepository
     /// Retrieves a role by its (normalized) name.
     /// </summary>
     /// <param name="name">The role name to search.</param>
+    /// <param name="isTracked">Flags whether to enable entity tracker</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>The matching <see cref="RoleEntity"/>, or <c>null</c> if not found.</returns>
-    Task<RoleEntity?> GetByNameAsync(string name, CancellationToken ct = default);
+    Task<RoleEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default);
 
     /// <summary>
     /// Performs a contains/term search on role properties returning a paginated set of matches.
