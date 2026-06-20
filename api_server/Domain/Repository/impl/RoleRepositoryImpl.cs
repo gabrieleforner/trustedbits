@@ -11,14 +11,17 @@ namespace Trustedbits.ApiServer.Domain.Repository.impl;
 public class RoleRepositoryImpl : IRoleRepository
 {
     private readonly IGenericRepository<RoleEntity> _genericRepository;
+    private readonly ServerDbContext _dbContext;
 
     /// <summary>
     /// Creates a new instance of <see cref="RoleRepositoryImpl"/>.
     /// </summary>
     /// <param name="genericRepository">The generic repository used to perform storage operations.</param>
-    public RoleRepositoryImpl(IGenericRepository<RoleEntity> genericRepository)
+    /// <param name="dbContext">The EF Core database context for direct queries with includes.</param>
+    public RoleRepositoryImpl(IGenericRepository<RoleEntity> genericRepository, ServerDbContext dbContext)
     {
         _genericRepository = genericRepository;
+        _dbContext = dbContext;
     }
 
 
@@ -32,8 +35,10 @@ public class RoleRepositoryImpl : IRoleRepository
     /// <inheritdoc />
     public async Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
     {
-        var result = await _genericRepository.GetFirstOrDefaultAsync(x => x.Id == id, isTracked, ct);
-        return result;
+        var query = isTracked
+            ? _dbContext.Roles.AsTracking().Include(r => r.ScopeEntities)
+            : _dbContext.Roles.AsNoTracking().Include(r => r.ScopeEntities);
+        return await query.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
     /// <inheritdoc />

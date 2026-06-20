@@ -181,4 +181,29 @@ public class RoleHttpAdapter : ControllerBase
         }
         return Ok();
     }
+    
+    /// <summary>
+    /// HTTP adapter for expose IRoleService.Assign(roleId, scopeId) use case.
+    /// </summary>
+    /// <param name="roleId"></param>
+    /// <param name="scopeId"></param>
+    /// <returns></returns>
+    [HttpDelete("{roleId:guid}/scopes")]
+    public async Task<IActionResult> RevokeScope([FromRoute] Guid roleId, [FromQuery] Guid scopeId)
+    {
+        var result = await _service.RevokeScope(roleId, scopeId);
+        if (result.IsFailed)
+        {
+            switch (result.ErrorType)
+            {
+                case ErrorType.NotFound:
+                    return NotFound(result.Error);
+                case ErrorType.BadRequest:
+                    return BadRequest(result.Error);
+                case ErrorType.Conflict:
+                    return Conflict(result.Error);
+            }
+        }
+        return Ok();
+    }
 }

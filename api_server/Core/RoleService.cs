@@ -179,6 +179,29 @@ public class RoleService : IRoleService
     /// <inheritdoc/>
     public async Task<Result<bool>> RevokeScope(Guid roleId, Guid scopeId)
     {
-        throw new NotImplementedException();
+        // Check if role exists, and if so retrieve the tracked target
+        var targetRole = await _roleRepository.GetByIdAsync(roleId, true);
+        if (targetRole == null)
+            return ResultHelpers<bool>.NotFoundError(roleId, "Role not found");
+        // Check if scope exists, and if so retrieve the tracked target
+        var targetScope = await _scopeRepository.GetByIdAsync(scopeId, true);
+        if (targetScope == null)
+            return ResultHelpers<bool>.NotFoundError(scopeId, "Scope not found");
+
+
+        var scopeToRemove = targetRole.ScopeEntities.FirstOrDefault(s => s.Id == scopeId);
+        if (scopeToRemove == null)
+        {
+            var errorDetail = new Dictionary<string, string>
+            {
+                { "ScopeId", scopeId.ToString() },
+            };
+            return ResultHelpers<bool>.BadRequest("Scope was not assigned", errorDetail);
+        }
+            
+
+        targetRole.ScopeEntities.Remove(scopeToRemove);
+        await _roleRepository.SaveChanges();
+        return new Result<bool>(true);
     }
 }
