@@ -56,6 +56,10 @@ public class RoleRepositoryImpl : IRoleRepository
     {
         var query = _dbSet.AsQueryable();
         query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+
+        if(eagerLoadScopes)
+            query = query.Include(r => r.ScopeEntities);
+    
         return await query.FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
     }
 

@@ -184,7 +184,7 @@ public class RoleService : IRoleService
     public async Task<Result<bool>> RevokeScope(Guid roleId, Guid scopeId)
     {
         // Check if role exists, and if so retrieve the tracked target
-        var targetRole = await _roleRepository.GetByIdAsync(roleId, true);
+        var targetRole = await _roleRepository.GetByIdAsync(roleId, true, true);
         if (targetRole == null)
             return ResultHelpers<bool>.NotFoundError(roleId, "Role not found");
         // Check if scope exists, and if so retrieve the tracked target
@@ -202,8 +202,7 @@ public class RoleService : IRoleService
             };
             return ResultHelpers<bool>.BadRequest("Scope was not assigned", errorDetail);
         }
-            
-
+        
         targetRole.ScopeEntities.Remove(scopeToRemove);
         await _roleRepository.SaveChanges();
         return new Result<bool>(true);
