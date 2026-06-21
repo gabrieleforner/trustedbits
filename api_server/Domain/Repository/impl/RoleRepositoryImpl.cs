@@ -1,85 +1,95 @@
 using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Domain.Entity;
-using Trustedbits.ApiServer.Infrastructure.EFCore;
 
 namespace Trustedbits.ApiServer.Domain.Repository.impl;
 
-/// <summary>
-/// Concrete implementation of <see cref="IRoleRepository"/> that delegates
-/// common persistence operations to a generic repository implementation.
-/// </summary>
 public class RoleRepositoryImpl : IRoleRepository
 {
-    private readonly IGenericRepository<RoleEntity> _genericRepository;
-    private readonly ServerDbContext _dbContext;
+    private readonly DbSet<RoleEntity> _dbSet;
+    private readonly DbContext _context;
 
-    /// <summary>
-    /// Creates a new instance of <see cref="RoleRepositoryImpl"/>.
-    /// </summary>
-    /// <param name="genericRepository">The generic repository used to perform storage operations.</param>
-    /// <param name="dbContext">The EF Core database context for direct queries with includes.</param>
-    public RoleRepositoryImpl(IGenericRepository<RoleEntity> genericRepository, ServerDbContext dbContext)
+    public RoleRepositoryImpl(DbContext context)
     {
-        _genericRepository = genericRepository;
-        _dbContext = dbContext;
+        _context = context;
+        _dbSet = context.Set<RoleEntity>();
     }
 
-
-    /// <inheritdoc />
-    public async Task<RoleEntity> CreateAsync(RoleEntity role, CancellationToken ct = default)
+    public async Task<RoleEntity> CreateAsync(RoleEntity role, CancellationToken cancellationToken = default)
     {
-        var result = await _genericRepository.CreateAsync(role, ct);
-        return result;
+        var result = _dbSet.Add(role);
+        await _context.SaveChangesAsync(cancellationToken);
+        return result.Entity;
     }
 
-    /// <inheritdoc />
-    public async Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
+    public async Task<RoleEntity> UpdateAsync(RoleEntity role, CancellationToken cancellationToken = default)
     {
-        var query = isTracked
-            ? _dbContext.Roles.AsTracking().Include(r => r.ScopeEntities)
-            : _dbContext.Roles.AsNoTracking().Include(r => r.ScopeEntities);
-        return await query.FirstOrDefaultAsync(x => x.Id == id, ct);
+        var entityState = _context.Entry(role).State;
+        switch (entityState)
+        {
+            case EntityState.Modified:
+            {
+                // Handle tracked entities update
+                await _context.SaveChangesAsync(cancellationToken);
+                return role;
+            }
+            case EntityState.Detached:
+            {
+                // Handle untracked entities update
+                var result = _dbSet.Update(role);
+                await _context.SaveChangesAsync(cancellationToken);
+                return result.Entity;
+            }
+            // Theoretically never hit, should always fall in one of the two cases
+            default:
+                return role;
+        }
     }
 
-    /// <inheritdoc />
-    public async Task<IEnumerable<RoleEntity>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
+    public async Task DeleteAsync(RoleEntity role, CancellationToken cancellationToken = default)
     {
-        var entities = await _genericRepository.GetAllAsync(page, pageSize, ct);
-        return entities;
+        _dbSet.Remove(role);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    /// <inheritdoc />
-    public async Task<RoleEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default)
+    public async Task<RoleEntity?> GetByIdAsync(Guid id, bool isTracked = false, bool eagerLoadScopes = false, bool eagerLoadUsers = false,
+        CancellationToken cancellationToken = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(x => x.NormalizedName == name.ToLower(), isTracked, ct);
+        var query = _dbSet.AsQueryable();
+        query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+        return await query.FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+    }
+
+    public async Task<RoleEntity?> GetByNameAsync(string name, bool isTracked = false, bool eagerLoadScopes = false, bool eagerLoadUsers = false,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsQueryable();
+        query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+        return await query.FirstOrDefaultAsync(x => x.NormalizedName.Equals(name.ToLower()), cancellationToken);
+    }
+
+    public async Task<IEnumerable<RoleEntity>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet
+            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize);
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<RoleEntity>> SearchAsync(string term, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var matching = await _dbSet
+            .Where(s =>
+                s.NormalizedName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                s.Description.Contains(term, StringComparison.OrdinalIgnoreCase))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
         return matching;
     }
-    
-    /// <inheritdoc />
-    public async Task<IEnumerable<RoleEntity>> GetByContainsAsync(string term, int page, int pageSize, CancellationToken ct = default)
-    {
-        var matching = await _genericRepository.GetMatchingAsync(x => 
-            x.NormalizedName.Contains(term.ToLower(), StringComparison.InvariantCultureIgnoreCase) ||
-            x.Description.Contains(term, StringComparison.InvariantCultureIgnoreCase), page, pageSize, ct);
-        return matching;
-    }
 
-    /// <inheritdoc />
-    public async Task<RoleEntity> UpdateAsync(RoleEntity scope, CancellationToken ct = default)
+    public async Task SaveChanges(CancellationToken cancellationToken = default)
     {
-        var result = await _genericRepository.UpdateAsync(scope, ct);
-        return result;
-    }
-
-    /// <inheritdoc />
-    public async Task DeleteAsync(RoleEntity scope, CancellationToken ct = default)
-    {
-        await _genericRepository.DeleteAsync(scope, ct);
-    }
-    
-    /// <inheritdoc/>
-    public async Task SaveChanges(CancellationToken ct = default)
-    {
-        await _genericRepository.SaveChanges(ct);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

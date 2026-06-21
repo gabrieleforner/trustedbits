@@ -20,7 +20,7 @@ public class ScopeService : IScopeService
     private readonly IScopeRepository _repository;
 
     /// <summary>
-    /// Logger (required for auit log events on this resource types)
+    /// Logger (required for audit log events on this resource types)
     /// </summary>
     private readonly ILogger<ScopeService> _logger;
 
@@ -107,7 +107,7 @@ public class ScopeService : IScopeService
             return validationError;
 
         // Retrieve from repository and return mapped DTOs
-        var matching = await _repository.GetByContainsAsync(term, page, size);
+        var matching = await _repository.SearchAsync(term, page, size);
         var mappedScopes = _mapper.Map<IEnumerable<ScopeDto>>(matching);
         
         return new Result<IEnumerable<ScopeDto>>(mappedScopes);
@@ -121,14 +121,13 @@ public class ScopeService : IScopeService
             return ResultHelpers<ScopeDto>.InvalidIdError();
         
         // Find the target scope, if not found return error
-        var updateTarget = await _repository.GetByIdAsync(id);
+        var updateTarget = await _repository.GetByIdAsync(id, isTracked:true);
         if (updateTarget == null)
             return ResultHelpers<ScopeDto>.NotFoundError(id);
         
         var modifyName  = string.IsNullOrWhiteSpace(scope.ScopeName) != true;
         var modifyValue = string.IsNullOrWhiteSpace(scope.ScopeValue) != true;
         var modifyDesc  = string.IsNullOrWhiteSpace(scope.ScopeDescription) != true;
-        var isModified = false;
 
         if (modifyName)
         {
@@ -139,7 +138,6 @@ public class ScopeService : IScopeService
 
             updateTarget.DisplayName = scope.ScopeName;
             updateTarget.NormalizedName = scope.ScopeName.ToLower();
-            isModified = true;
             _logger.LogInformation("Scope NAME updated successfully (TARGET_ID={id})", id);
         }
         if (modifyValue)
@@ -150,19 +148,16 @@ public class ScopeService : IScopeService
                 return ResultHelpers<ScopeDto>.ConflictError("ScopeValue", scope.ScopeValue);
 
             updateTarget.Value = scope.ScopeValue.ToLower();
-            isModified = true;
             _logger.LogInformation("Scope VALUE updated successfully (TARGET_ID={id})", id);
         }
         if (modifyDesc)
         {
             updateTarget.Description = scope.ScopeDescription!;
-            isModified = true;
             _logger.LogInformation("Scope DESCRIPTION updated successfully (TARGET_ID={id})", id);
         }
 
-        // Apply update only if at least one field has been modified
-        if (isModified)
-            await _repository.UpdateAsync(updateTarget);
+        // Save edits to the DB
+        await _repository.UpdateAsync(updateTarget);
         
         // Regardless of any update, return the DTO of the scope
         return new Result<ScopeDto>(_mapper.Map<ScopeDto>(updateTarget));

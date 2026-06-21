@@ -90,7 +90,7 @@ public class RoleService : IRoleService
         if (pageValidationError != null)
             return pageValidationError;
         
-        var matching = await _roleRepository.GetByContainsAsync(term, page, pageSize);
+        var matching = await _roleRepository.SearchAsync(term, page, pageSize);
         var mapped = _mapper.Map<IEnumerable<RoleDto>>(matching);
         
         return new Result<IEnumerable<RoleDto>>(mapped);
@@ -158,11 +158,14 @@ public class RoleService : IRoleService
     public async Task<Result<bool>> AssignScope(Guid roleId, Guid scopeId)
     {
         // Check if role exists, and if so retrieve the tracked target
-        var targetRole = await _roleRepository.GetByIdAsync(roleId, true);
+        var targetRole = await _roleRepository.GetByIdAsync(roleId, isTracked: true,
+            eagerLoadScopes: true,
+            eagerLoadUsers: false);
         if (targetRole == null)
             return ResultHelpers<bool>.NotFoundError(roleId, "Role not found");
+
         // Check if scope exists, and if so retrieve the tracked target
-        var targetScope = await _scopeRepository.GetByIdAsync(scopeId, true);
+        var targetScope = await _scopeRepository.GetByIdAsync(scopeId, isTracked: true);
         if (targetScope == null)
             return ResultHelpers<bool>.NotFoundError(scopeId, "Scope not found");
 

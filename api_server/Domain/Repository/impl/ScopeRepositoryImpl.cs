@@ -1,75 +1,102 @@
+using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Domain.Entity;
+using Trustedbits.ApiServer.Infrastructure.EFCore;
 
 namespace Trustedbits.ApiServer.Domain.Repository.impl;
 
-/// <summary>
-/// Implementation of <see cref="IScopeRepository"/> that delegates storage operations
-/// to a generic repository for <see cref="ScopeEntity"/>.
-/// </summary>
-/// <param name="genericRepository">The generic repository used to perform persistence operations.</param>
-public class ScopeRepositoryImpl(IGenericRepository<ScopeEntity> genericRepository) : IScopeRepository
+public class ScopeRepositoryImpl : IScopeRepository
 {
-    private readonly IGenericRepository<ScopeEntity> _genericRepository = genericRepository;
+    private readonly ServerDbContext _context;
+    private readonly DbSet<ScopeEntity> _dbSet;
 
-    /// <inheritdoc />
-    public async Task<ScopeEntity> CreateAsync(ScopeEntity scope, CancellationToken ct = default)
+    public ScopeRepositoryImpl(ServerDbContext context)
     {
-        return await _genericRepository.CreateAsync(scope, ct);
+        _context = context;
+        _dbSet = context.Set<ScopeEntity>();
     }
 
-    /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByIdAsync(Guid id, bool isTracked=false, CancellationToken ct = default)
+    public async Task<ScopeEntity> CreateAsync(ScopeEntity scope, CancellationToken cancellationToken = default)
     {
-        return await _genericRepository.GetFirstOrDefaultAsync(s => s.Id == id, isTracked, ct);
+        var result = await _dbSet.AddAsync(scope, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return result.Entity;
     }
 
-    /// <inheritdoc />
-    public async Task<IEnumerable<ScopeEntity>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
+    public async Task<ScopeEntity> UpdateAsync(ScopeEntity scope, CancellationToken cancellationToken = default)
     {
-        var rows = await _genericRepository.GetAllAsync(page, pageSize, ct);
-        return rows;
+        var entityState = _context.Entry(scope).State;
+        switch (entityState)
+        {
+            case EntityState.Modified:
+            {
+                // Handle tracked entities update
+                await _context.SaveChangesAsync(cancellationToken);
+                return scope;
+            }
+            case EntityState.Detached:
+            {
+                // Handle untracked entities update
+                var result = _dbSet.Update(scope);
+                await _context.SaveChangesAsync(cancellationToken);
+                return result.Entity;
+            }
+            // Theoretically never hit, should always fall in one of the two cases
+            default:
+                return scope;
+        }
     }
 
-    /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByNameAsync(string name, bool isTracked=false, CancellationToken ct = default)
+    public async Task DeleteAsync(ScopeEntity scope, CancellationToken cancellationToken = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.NormalizedName == name.ToLower(), isTracked, ct);
+        _dbSet.Remove(scope);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<ScopeEntity?> GetByIdAsync(Guid id, bool isTracked = false, CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsQueryable();
+        query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+        return await query.FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
+    }
+
+    public async Task<ScopeEntity?> GetByNameAsync(string name, bool isTracked = false, CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsQueryable();
+        query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+        return await query.FirstOrDefaultAsync(x => x.NormalizedName.Equals(name.ToLower()), cancellationToken);
+    }
+
+    public async Task<ScopeEntity?> GetByValueAsync(string value, bool isTracked = false, CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsQueryable();
+        query = isTracked ? query.AsTracking() : query.AsNoTracking();      // Handle entity tracking
+        return await query.FirstOrDefaultAsync(x => x.Value.Equals(value.ToLower()), cancellationToken);
+    }
+
+    public async Task<IEnumerable<ScopeEntity>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet
+            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize);
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<ScopeEntity>> SearchAsync(string term, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var matching = await _dbSet
+            .Where(s =>
+                s.NormalizedName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                s.Value.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                s.Description.Contains(term, StringComparison.OrdinalIgnoreCase))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
         return matching;
     }
 
-    /// <inheritdoc />
-    public async Task<ScopeEntity?> GetByValueAsync(string value, bool isTracked=false, CancellationToken ct = default)
+    public async Task SaveChanges(CancellationToken cancellationToken = default)
     {
-        var matching = await _genericRepository.GetFirstOrDefaultAsync(s => s.Value == value.ToLower(), isTracked, ct);
-        return matching;
-    }
-
-    /// <inheritdoc />
-    public async Task<IEnumerable<ScopeEntity>> GetByContainsAsync(string term, int page, int pageSize,
-        CancellationToken ct = default)
-    {
-        var matching = await _genericRepository.GetMatchingAsync(s =>
-            s.NormalizedName.Contains(term.ToLower()) ||
-            s.Value.Contains(term.ToLower()) ||
-            s.Description.Contains(term.ToLower()), page, pageSize, ct);
-        return matching;
-    }
-
-    /// <inheritdoc />
-    public async Task<ScopeEntity> UpdateAsync(ScopeEntity scope, CancellationToken ct = default)
-    {
-        return await _genericRepository.UpdateAsync(scope, ct);
-    }
-
-    /// <inheritdoc />
-    public async Task DeleteAsync(ScopeEntity scope, CancellationToken ct = default)
-    {
-        await _genericRepository.DeleteAsync(scope, ct);
-    }
-    
-    /// <inheritdoc/>
-    public async Task SaveChanges(CancellationToken ct = default)
-    {
-        await _genericRepository.SaveChanges(ct);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

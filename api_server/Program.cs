@@ -63,9 +63,10 @@ public class Program
     /// <param name="builder">The web application builder used to register services.</param>
     private static void SetupDIBindings(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericGenericRepositoryEfCoreImpl<>));
+        builder.Services.AddScoped<DbContext, ServerDbContext>();
         builder.Services.AddScoped<IScopeRepository, ScopeRepositoryImpl>();
         builder.Services.AddScoped<IRoleRepository, RoleRepositoryImpl>();
+        
         builder.Services.AddScoped<IScopeService, ScopeService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
     }
