@@ -5,6 +5,10 @@ namespace Trustedbits.ApiServer.Domain.Repository;
 public interface IScopeRepository
 {
     Task CreateScopeAsync(Scope scope, CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByValueAsync(string value, CancellationToken cancellationToken = default);
     
     Task<Scope?> GetByIdAsync(Guid scopeId, bool tracking = false, bool loadRoles = false,
         CancellationToken cancellationToken = default);

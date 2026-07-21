@@ -37,6 +37,42 @@ public class ScopeRepositoryImpl : IScopeRepository
         }
     }
 
+    public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return  await _scopes.AnyAsync(s => s.Id == id, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message, RepositoryExceptionType.ServerException);
+        }
+    }
+
+    public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return  await _scopes.AnyAsync(s => s.NormalizedName == name.ToUpperInvariant(), cancellationToken);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message, RepositoryExceptionType.ServerException);
+        }
+    }
+
+    public async Task<bool> ExistsByValueAsync(string value, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return  await _scopes.AnyAsync(s => s.Value == value, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            throw new RepositoryException(e.Message, RepositoryExceptionType.ServerException);
+        }
+    }
+
     public async Task<Scope?> GetByIdAsync(Guid scopeId, bool tracking = false, bool loadRoles = false,
         CancellationToken cancellationToken = default)
     {
