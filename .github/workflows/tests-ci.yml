@@ -1,0 +1,38 @@
+name: "API Server testing CI"
+on:
+  push:
+    branches: ['*']
+  pull_request: 
+    branches: ['*']
+
+jobs:
+  run-tests:
+    name: 'Run unit tests'
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'  
+
+      - name: Restore project dependency
+        run: dotnet restore
+        
+      - name: Build project
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publish test results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Unit Test Results
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
