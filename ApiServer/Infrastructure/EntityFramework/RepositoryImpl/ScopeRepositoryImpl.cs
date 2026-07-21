@@ -10,10 +10,10 @@ public class ScopeRepositoryImpl : IScopeRepository
     private readonly ServerDbContext _dbContext;
     private readonly DbSet<Scope> _scopes;
 
-    public ScopeRepositoryImpl(ServerDbContext dbContext, DbSet<Scope> scopes)
+    public ScopeRepositoryImpl(ServerDbContext dbContext)
     {
         _dbContext = dbContext;
-        _scopes = scopes;
+        _scopes = dbContext.Set<Scope>();
     }
 
     public async Task CreateScopeAsync(Scope scope, CancellationToken cancellationToken = default)
