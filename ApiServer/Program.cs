@@ -1,6 +1,7 @@
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Trustedbits.ApiServer.Infrastructure;
+using Trustedbits.ApiServer.Infrastructure.Automapper;
 using Trustedbits.ApiServer.Infrastructure.EntityFramework;
 
 namespace Trustedbits.ApiServer;
@@ -18,6 +19,12 @@ public class Program
             options
                 .UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"))
                 .UseExceptionProcessor();
+        });
+        builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+        builder.Services.AddAutoMapper(cfg =>
+        {
+            cfg.AddProfile<ScopeMapProfiles>();
         });
         
         var app = builder.Build();
