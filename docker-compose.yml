@@ -1,0 +1,14 @@
+services:
+  postgres-dev:
+    image: postgres:18.0
+    env_file: .env
+    environment:
+      - POSTGRES_DB=${DEFAULT_DB_NAME}
+      - POSTGRES_USER=${ROOT_USERNAME}
+      - POSTGRES_PASSWORD=${ROOT_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_vol:/var/lib/postgresql
+volumes:
+  postgres_vol:
