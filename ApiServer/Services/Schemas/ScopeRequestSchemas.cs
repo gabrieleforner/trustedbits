@@ -8,3 +8,8 @@ public record CreateScopeRequest : IRequest<Result<CreateScopeResponse>>
     public required string Value { get; init; }
     public required string Description { get; init; }
 }
+
+public record DescribeScopeRequest : IRequest<Result<DescribeScopeResponse>>
+{
+    public required Guid Id { get; init; }
+}

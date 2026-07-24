@@ -199,3 +199,57 @@ public class CreateScopeHandlerTests
         Assert.That(result.Error.Type, Is.EqualTo(ErrorType.ServerError));
     }
 }
+
+public class DescribeScopeHandlerTests
+{
+    private Mock<IScopeRepository> _mockRepository;
+    private ILogger<CreateScopeHandler> _mockLogger;
+    private IMapper _mapper;
+    
+    [SetUp]
+    public void Setup()
+    {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<ScopeMapProfiles>();
+        }, NullLoggerFactory.Instance);
+        _mapper = new Mapper(config);
+        _mockLogger = NullLoggerFactory.Instance.CreateLogger<CreateScopeHandler>();
+        _mockRepository = new Mock<IScopeRepository>();
+    }
+
+    [Test]
+    public async Task TestValidationEmptyId_ShouldReturnBadRequestResult() 
+    {
+        var testRequest = new DescribeScopeRequest { Id = Guid.Empty };
+        var handler = new DescribeScopeHandler(_mockRepository.Object, NullLogger<DescribeScopeHandler>.Instance, _mapper);
+        var response = await handler.Handle(testRequest, CancellationToken.None);
+        
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Failed, Is.True);
+        Assert.That(response.Error, Is.Not.Null);
+        Assert.That(response.Error.Type, Is.EqualTo(ErrorType.BadRequest));
+    }
+    
+    [Test]
+    public async Task TestDbFailure_ShouldReturnServerError() 
+    {
+        _mockRepository.Setup(r => r.ExistsByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Throws(new RepositoryException("DB connection failure", RepositoryExceptionType.ServerException));
+
+        var testRequest = new DescribeScopeRequest { Id = Guid.NewGuid() };
+        var handler = new DescribeScopeHandler(_mockRepository.Object, NullLogger<DescribeScopeHandler>.Instance, _mapper);
+        var response = await handler.Handle(testRequest, CancellationToken.None);
+        
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Failed, Is.True);
+        Assert.That(response.Error, Is.Not.Null);
+        Assert.That(response.Error.Type, Is.EqualTo(ErrorType.ServerError));
+    }
+    
+    [TearDown]
+    public void TearDown()
+    {
+        _mockRepository.Reset();
+    }
+}
